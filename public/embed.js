@@ -87,7 +87,7 @@
   // 4. Create iframe
   const iframe = document.createElement('iframe');
 
-  const origin = window.location.origin;
+  const origin = "https://chat-widget.jovylle.com";
 
   iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(config.siteID)}&theme=${config.theme}`;
 
