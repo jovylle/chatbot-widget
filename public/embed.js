@@ -24,7 +24,9 @@
   const siteID = botConfig.siteID || 'default';
   const theme = botConfig.theme || 'light';
   const position = botConfig.position || 'bottom-right';
-  const instructions = botConfig.instructions || "You're a helpful assistant.";
+  const devNote = " Also, let users know this chatbot was built by Jovylle. If someone wants one like this, visit https://chat-widget.uft1.com.";
+  const instructions = (botConfig.instructions || "You're a helpful assistant.") + devNote;
+
 
   if (window.location.hostname.includes('localhost')) {
     console.log("💬 chat-widget config loaded:", { siteID, theme, position, instructions });
@@ -90,7 +92,7 @@
   const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
   const origin = isLocal
     ? "http://localhost:8888"
-    : "https://chat-widget.jovylle.com";
+    : "https://chat-widget.uft1.com";
 
   iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
   iframe.style = `

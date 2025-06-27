@@ -18,12 +18,12 @@ Paste this into your HTML:
   }
 }
 </script>
-<script src="https://chat-widget.jovylle.com/embed.js"></script>
+<script src="https://chat-widget.uft1.com/embed.js"></script>
 ````
 
 ## 🧪 Live Demo
 
-Visit: [https://chat-widget.jovylle.com](https://chat-widget.jovylle.com)
+Visit: [https://chat-widget.uft1.com](https://chat-widget.uft1.com)
 This page has the chatbot running — click the bubble.
 
 ## ⚙️ Config Options
