@@ -1,0 +1,7 @@
+{
+  "name": "chatbot-widget",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  },
+  "type": "module"
+}

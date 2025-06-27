@@ -1,0 +1,30 @@
+# .gitignore
+
+# Node + Netlify
+node_modules/
+.netlify/
+.env
+.env.local
+.env.production
+dist/
+build/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# OS/System junk
+.DS_Store
+Thumbs.db
+
+# IDE settings
+.vscode/
+.idea/
+*.code-workspace
+
+# Lockfiles (optional if using Yarn/Pnpm exclusively)
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
