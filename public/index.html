@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>chat-widget – Instant Embed Chatbot</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <style>
+    body {
+      font-family: system-ui, sans-serif;
+      margin: 0;
+      padding: 2rem;
+      max-width: 720px;
+      margin-inline: auto;
+      background: #f8f8f8;
+      color: #111;
+    }
+
+    h1 {
+      font-size: 2rem;
+    }
+
+    code,
+    pre {
+      background: #eee;
+      padding: 0.5rem;
+      display: block;
+      overflow-x: auto;
+      border-radius: 4px;
+      margin-top: 0.5rem;
+    }
+
+    .demo {
+      margin: 2rem 0;
+      padding: 1rem;
+      border: 1px dashed #ccc;
+      background: #fff;
+    }
+
+    .floating-note {
+      font-size: 0.9rem;
+      color: #666;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>💬 chat-widget</h1>
+  <p>
+    Instantly embed a chatbot on any website. Lightweight. Configurable. Powered by GPT.
+  </p>
+
+  <h2>🚀 How to Use</h2>
+  <p>Paste this inside your HTML:</p>
+  <pre><code>&lt;script type="application/json" id="chat-config"&gt;
+{
+  "chatbot": {
+    "siteID": "your-site-id",
+    "theme": "light",
+    "position": "bottom-right",
+    "instructions": "You're a helpful assistant for this site."
+  }
+}
+&lt;/script&gt;
+&lt;script src="https://chat-widget.jovylle.com/embed.js"&gt;&lt;/script&gt;
+</code></pre>
+
+  <h2>🧪 Live Demo</h2>
+  <p>This page is running the chatbot — click the chat bubble.</p>
+  <div class="demo">
+    <!-- embed script here -->
+    <script type="application/json" id="chat-config">
+    {
+      "chatbot": {
+        "siteID": "demo",
+        "theme": "light",
+        "position": "bottom-right",
+        "instructions": "You're a demo assistant. Help users understand what this tool does."
+      }
+    }
+    </script>
+    <script src="/embed.js"></script>
+    <div class="floating-note">🧠 You can move the chat button to bottom-left, top-right, etc.</div>
+  </div>
+
+  <h2>📘 Config Options</h2>
+  <ul>
+    <li><strong>siteID</strong>: Optional site identifier</li>
+    <li><strong>theme</strong>: "light" (default) or "dark"</li>
+    <li><strong>position</strong>: "bottom-right" (default), "bottom-left", "top-right", "top-left"</li>
+    <li><strong>instructions</strong>: Prompt for your chatbot's behavior</li>
+  </ul>
+
+  <p>📂 <a href="https://github.com/yourname/chat-widget" target="_blank">View on GitHub</a></p>
+
+</body>
+
+</html>

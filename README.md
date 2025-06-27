@@ -1,8 +1,40 @@
-### 💬 Config Options (via JSON)
 
-| Field        | Type     | Description |
-|--------------|----------|-------------|
-| `siteID`     | `string` | Optional ID for per-site logic |
-| `theme`      | `string` | `"light"` (default) or `"dark"` |
-| `instructions` | `string` | Required. System prompt to guide the bot |
-| `position`   | `string` | `"bottom-right"` (default), `"bottom-left"`, `"top-right"`, `"top-left"` |
+# 💬 chat-widget
+
+Instantly embed a GPT-powered chatbot into any site.
+
+## 🚀 How to Use
+
+Paste this into your HTML:
+
+```html
+<script type="application/json" id="chat-config">
+{
+  "chatbot": {
+    "siteID": "your-site-id",
+    "theme": "light",
+    "position": "bottom-right",
+    "instructions": "You're a helpful assistant for this site."
+  }
+}
+</script>
+<script src="https://chat-widget.jovylle.com/embed.js"></script>
+````
+
+## 🧪 Live Demo
+
+Visit: [https://chat-widget.jovylle.com](https://chat-widget.jovylle.com)
+This page has the chatbot running — click the bubble.
+
+## ⚙️ Config Options
+
+| Field          | Type     | Description                                                              |
+| -------------- | -------- | ------------------------------------------------------------------------ |
+| `siteID`       | `string` | Optional ID to track source                                              |
+| `theme`        | `string` | `"light"` (default) or `"dark"`                                          |
+| `position`     | `string` | `"bottom-right"` (default), `"bottom-left"`, `"top-right"`, `"top-left"` |
+| `instructions` | `string` | Prompt given to the GPT assistant                                        |
+
+---
+
+📂 [View Source Code](https://github.com/jovylle/chat-widget)
