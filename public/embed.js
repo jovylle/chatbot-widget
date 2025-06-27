@@ -1,33 +1,45 @@
 (function () {
-  // 1. Parse config JSON from the embedding site
-  const configScript = document.getElementById('chat-config');
+  // 1. Load and parse chatbot config from <script id="chat-config">
   let config = {
-    instructions: 'You are a helpful assistant.',
-    siteID: 'default',
-    theme: 'light'
+    chatbot: {
+      instructions: "You're a helpful assistant.",
+      siteID: "default",
+      theme: "light",
+      position: "bottom-right"
+    }
   };
 
-  if (configScript && configScript.textContent) {
-    try {
-      config = { ...config, ...JSON.parse(configScript.textContent) };
-    } catch (e) {
-      console.error('Invalid JSON in #chat-config', e);
-    }
+  try {
+    const configScript = document.getElementById('chat-config');
+    if (!configScript) throw new Error("Missing <script id='chat-config'>");
+    const raw = configScript.textContent || configScript.innerText || '';
+    const parsed = JSON.parse(raw);
+    if (parsed.chatbot) config = parsed;
+    else console.warn("chat-config JSON missing 'chatbot' key. Using defaults.");
+  } catch (err) {
+    console.error("⚠️ Failed to load chatbot config:", err);
   }
 
+  const botConfig = config.chatbot || {};
+  const siteID = botConfig.siteID || 'default';
+  const theme = botConfig.theme || 'light';
+  const position = botConfig.position || 'bottom-right';
+  const instructions = botConfig.instructions || "You're a helpful assistant.";
 
-  const position = config.position || 'bottom-right'; // default
+  if (window.location.hostname.includes('localhost')) {
+    console.log("💬 chat-widget config loaded:", { siteID, theme, position, instructions });
+  }
 
+  // 2. Determine button position
   const isBottom = position.includes('bottom');
   const isRight = position.includes('right');
 
   const buttonOffset = `
-  ${isBottom ? 'bottom' : 'top'}: 24px;
-  ${isRight ? 'right' : 'left'}: 24px;
-`;
+    ${isBottom ? 'bottom' : 'top'}: 24px;
+    ${isRight ? 'right' : 'left'}: 24px;
+  `;
 
-
-  // 2. Create floating chat button
+  // 3. Create floating button
   const button = document.createElement('div');
   button.innerHTML = `
     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -35,46 +47,35 @@
     </svg>
   `;
   button.style = `
-  ${buttonOffset}
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  width: 48px;
-  height: 48px;
-  background: white;
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 9999;
-  transition: box-shadow 0.2s;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-`;
-
-  button.onmouseenter = () => {
-    button.style.boxShadow = '0 0 6px rgba(0,0,0,0.15)';
-  };
-  button.onmouseleave = () => {
-    button.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
-  };
-
+    ${buttonOffset}
+    position: fixed;
+    width: 48px;
+    height: 48px;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 9999;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: box-shadow 0.2s;
+  `;
+  button.onmouseenter = () => button.style.boxShadow = '0 0 6px rgba(0,0,0,0.15)';
+  button.onmouseleave = () => button.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
   document.body.appendChild(button);
 
-
-
+  // 4. Create wrapper for iframe
   const wrapperOffset = `
     ${isBottom ? 'bottom' : 'top'}: 84px;
     ${isRight ? 'right' : 'left'}: 24px;
   `;
-  // 3. Create floating wrapper for iframe
+
   const wrapper = document.createElement('div');
   wrapper.style = `
     position: fixed;
     ${wrapperOffset}
-    bottom: 84px;
-    right: 24px;
     width: 360px;
     height: 480px;
     display: none;
@@ -84,39 +85,30 @@
     box-shadow: 0 4px 20px rgba(0,0,0,0.3);
   `;
 
-  // 4. Create iframe
+  // 5. Create iframe
   const iframe = document.createElement('iframe');
-
-  const origin = "https://chat-widget.jovylle.com";
-
-  iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(config.siteID)}&theme=${config.theme}`;
-
-  // iframe.src = `https://your-site.netlify.app/widget.html?siteID=${encodeURIComponent(config.siteID)}&theme=${config.theme}`;
+  const origin = "https://chat-widget.jovylle.com"; // 🔐 Your production host
+  iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
   iframe.style = `
     width: 100%;
     height: 100%;
     border: none;
   `;
-
   wrapper.appendChild(iframe);
   document.body.appendChild(wrapper);
 
-  // 5. Toggle visibility on button click
+  // 6. Toggle chat visibility
   let open = false;
   button.onclick = () => {
     open = !open;
     wrapper.style.display = open ? 'block' : 'none';
   };
 
-  // 6. Optional: pass instructions via postMessage
+  // 7. Send instructions to iframe
   iframe.onload = () => {
-    iframe.contentWindow.postMessage({
+    iframe.contentWindow?.postMessage({
       type: 'chat-config',
-      payload: {
-        instructions: config.instructions,
-        siteID: config.siteID,
-        theme: config.theme
-      }
+      payload: { siteID, theme, instructions }
     }, '*');
   };
 })();
