@@ -98,7 +98,6 @@
     <input type="text" id="input" placeholder="Ask something..." autocomplete="off" />
     <button type="submit">Send</button>
   </form>
-
   <script>
     const chat = document.getElementById('chat');
     const form = document.getElementById('form');
@@ -107,25 +106,22 @@
     let instructions = "You're a helpful assistant.";
     let siteID = "default";
 
-    // Receive initial config from embed.js
-    window.addEventListener('message', (event) => {
-      if (event.data?.type === 'chat-config') {
-        instructions = event.data.payload.instructions || instructions;
-        siteID = event.data.payload.siteID || siteID;
+    let messages = [];
 
-        const theme = event.data.payload.theme || 'light'; // ✅ fallback to light
-
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-          document.body.style.background = 'var(--bg)';
-        } else {
-          document.documentElement.classList.remove('dark');
-          document.body.style.background = 'var(--bg)';
-        }
+    // Load previous messages from sessionStorage
+    const saved = sessionStorage.getItem('chatHistory');
+    if (saved) {
+      try {
+        messages = JSON.parse(saved);
+        messages.forEach(msg => addMsg(msg.content, msg.role));
+      } catch (e) {
+        console.warn('Failed to parse saved chat history.');
       }
-    });
+    }
 
-
+    function saveChat () {
+      sessionStorage.setItem('chatHistory', JSON.stringify(messages));
+    }
 
     // Add message to chat UI
     function addMsg (text, who = 'bot') {
@@ -143,18 +139,44 @@
       if (!msg) return;
 
       addMsg(msg, 'user');
+      messages.push({ role: 'user', content: msg });
+      saveChat();
+
       input.value = '';
 
       const res = await fetch('/.netlify/functions/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: msg, instructions })
+        body: JSON.stringify({ messages, instructions })
       });
 
       const data = await res.json();
-      addMsg(data.reply || '[No reply]');
+      const reply = data.reply || '[No reply]';
+
+      addMsg(reply, 'bot');
+      messages.push({ role: 'assistant', content: reply });
+      saveChat();
     };
+
+    // Receive initial config from embed.js
+    window.addEventListener('message', (event) => {
+      if (event.data?.type === 'chat-config') {
+        instructions = event.data.payload.instructions || instructions;
+        siteID = event.data.payload.siteID || siteID;
+
+        const theme = event.data.payload.theme || 'light';
+
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+          document.body.style.background = 'var(--bg)';
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.body.style.background = 'var(--bg)';
+        }
+      }
+    });
   </script>
+  
 </body>
 
 </html>

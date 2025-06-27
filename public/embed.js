@@ -87,7 +87,11 @@
 
   // 5. Create iframe
   const iframe = document.createElement('iframe');
-  const origin = "https://chat-widget.jovylle.com"; // 🔐 Your production host
+  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const origin = isLocal
+    ? "http://localhost:8888"
+    : "https://chat-widget.jovylle.com";
+
   iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
   iframe.style = `
     width: 100%;

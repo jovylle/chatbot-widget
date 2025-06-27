@@ -2,12 +2,13 @@ import fetch from "node-fetch";
 
 export async function handler (event) {
   try {
-    const { prompt, instructions } = JSON.parse(event.body || '{}');
+    const { messages = [], instructions } = JSON.parse(event.body || '{}');
 
-    const messages = [
+    const finalMessages = [
       { role: "system", content: instructions || "You're a helpful assistant." },
-      { role: "user", content: prompt || "Hello!" }
+      ...messages
     ];
+
 
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
@@ -17,7 +18,7 @@ export async function handler (event) {
       },
       body: JSON.stringify({
         model: "gpt-3.5-turbo",
-        messages
+        messages: finalMessages
       })
     });
 
