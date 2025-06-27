@@ -1,7 +1,7 @@
 {
-  "name": "chatbot-widget",
+  "type": "module",
   "dependencies": {
-    "node-fetch": "^3.3.2"
-  },
-  "type": "module"
+    "node-fetch": "^3.3.2",
+    "openai": "^4.0.0"
+  }
 }

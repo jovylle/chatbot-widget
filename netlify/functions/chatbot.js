@@ -1,6 +1,6 @@
-const fetch = require("node-fetch");
+import fetch from "node-fetch";
 
-exports.handler = async (event) => {
+export async function handler (event) {
   try {
     const { prompt, instructions } = JSON.parse(event.body || '{}');
 
@@ -22,16 +22,16 @@ exports.handler = async (event) => {
     });
 
     const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || "Sorry, no reply.";
 
     return {
       statusCode: 200,
-      body: JSON.stringify({ reply })
+      body: JSON.stringify({ reply: data.choices?.[0]?.message?.content || "[No reply]" })
     };
   } catch (err) {
+    console.error("Chatbot error:", err);
     return {
       statusCode: 500,
       body: JSON.stringify({ error: err.message })
     };
   }
-};
+}

@@ -1,0 +1,32 @@
+<!-- public/test.html -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Test Embed</title>
+</head>
+
+<body>
+  <h1>Test Chatbot Widget Embed</h1>
+
+  <!-- Chatbot config options:
+    - siteID: Optional site identifier
+    - theme: "light" (default) or "dark"
+    - instructions: Required. System prompt for the bot
+    - position: "bottom-right" (default), "bottom-left", "top-right", "top-left"
+  -->
+
+  <script type="application/json" id="chat-config">
+    {
+      "siteID": "your-site-id",
+      "theme": "dark",
+      "instructions": "You're a helpful assistant.",
+      "position": "bottom-right"
+    }
+  </script>
+
+  <script src="/embed.js"></script>
+</body>
+
+</html>

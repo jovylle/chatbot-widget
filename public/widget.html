@@ -7,20 +7,31 @@
   <title>Chatbot</title>
   <style>
     :root {
-      --bg: #fff;
-      --text: #000;
-      --primary: #111;
+      --bg: #f9f9f9;
+      --text: #111;
+      --primary: #444;
+      --user-bg: #e0e0e0;
+      --bot-bg: #ffffff;
+      --border: #ccc;
     }
 
+
     html.dark {
-      --bg: #1a1a1a;
-      --text: #eee;
-      --primary: #00b4d8;
+      --bg: #1e1e1e;
+      /* changed from #1a1a1a */
+      --text: #f0f0f0;
+      --primary: #555;
+      --user-bg: #2a2a2a;
+      /* softened user bubble */
+      --bot-bg: #2e2e2e;
+      /* softened bot bubble */
+      --border: #444;
     }
+
 
     body {
       margin: 0;
-      font-family: sans-serif;
+      font-family: system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
       display: flex;
@@ -36,21 +47,28 @@
 
     .msg {
       margin: 0.5rem 0;
+      padding: 0.5rem 0.75rem;
+      border-radius: 6px;
       white-space: pre-wrap;
+      max-width: 90%;
     }
 
     .msg.user {
+      align-self: flex-end;
+      background: var(--user-bg);
       text-align: right;
-      font-weight: bold;
     }
 
     .msg.bot {
+      align-self: flex-start;
+      background: var(--bot-bg);
       text-align: left;
+      border: 1px solid var(--border);
     }
 
     form {
       display: flex;
-      border-top: 1px solid var(--primary);
+      border-top: 1px solid var(--border);
     }
 
     input {
@@ -60,6 +78,7 @@
       outline: none;
       background: var(--bg);
       color: var(--text);
+      font-size: 14px;
     }
 
     button {
@@ -67,6 +86,7 @@
       color: #fff;
       border: none;
       padding: 0 1rem;
+      font-size: 14px;
       cursor: pointer;
     }
   </style>
@@ -92,11 +112,20 @@
       if (event.data?.type === 'chat-config') {
         instructions = event.data.payload.instructions || instructions;
         siteID = event.data.payload.siteID || siteID;
-        if (event.data.payload.theme === 'dark') {
+
+        const theme = event.data.payload.theme || 'light'; // ✅ fallback to light
+
+        if (theme === 'dark') {
           document.documentElement.classList.add('dark');
+          document.body.style.background = 'var(--bg)';
+        } else {
+          document.documentElement.classList.remove('dark');
+          document.body.style.background = 'var(--bg)';
         }
       }
     });
+
+
 
     // Add message to chat UI
     function addMsg (text, who = 'bot') {
