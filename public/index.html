@@ -79,38 +79,42 @@
   <h2>🧪 Live Demo</h2>
   <p>This page is running the chatbot — click the chat bubble.</p>
   <div class="demo">
-    <label>Instructions:</label>
-    <textarea id="demo-instructions" rows="4">You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair disasters, advice on how humidity in Cebu affects styling, and funny mishaps that happened during fiesta rush season.</textarea>
+    <label for="demo-instructions">Instructions:</label>
+    <textarea id="demo-instructions" rows="4">You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair mishaps and tips for styling in our humid climate.</textarea>
 
-    <label>Position:</label>
+    <label for="demo-position">Position:</label>
     <select id="demo-position">
       <option value="bottom-right">bottom-right</option>
       <option value="bottom-left">bottom-left</option>
       <option value="top-right">top-right</option>
       <option value="top-left">top-left</option>
     </select>
+
     <button id="update-demo" style="margin-top:1rem;">Update Chatbot</button>
 
-    <script type="application/json" id="chat-config">
+    <!-- SINGLE, correctly-formed config script -->
+    <script type="application/json" id="chat-widget-config-001">
     {
       "chatbot": {
         "siteID": "demo",
         "theme": "light",
         "position": "bottom-right",
-        "instructions": "You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair disasters, advice on how humidity in Cebu affects styling, and funny mishaps that happened during fiesta rush season.
+        "instructions": "You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair mishaps and tips for styling in our humid climate."
       }
     }
     </script>
+
     <script src="/embed.js"></script>
-    <div class="floating-note">🧠 You can move the chat button to bottom-left, top-right, etc.</div>
+    <div class="floating-note">🧠 You can move the chat button around using the Position selector above.</div>
   </div>
 
   <script>
     document.getElementById('update-demo').addEventListener('click', () => {
       const instructions = document.getElementById('demo-instructions').value;
       const position = document.getElementById('demo-position').value;
-      const configScript = document.getElementById('chat-config');
-      const config = {
+      const configScript = document.getElementById('chat-widget-config-001');
+
+      const newConfig = {
         chatbot: {
           siteID: 'demo',
           theme: 'light',
@@ -118,7 +122,11 @@
           instructions
         }
       };
-      configScript.textContent = JSON.stringify(config);
+
+      // overwrite the JSON text
+      configScript.textContent = JSON.stringify(newConfig, null, 2);
+
+      // reload to re-read the config and re-initialize
       window.location.reload();
     });
   </script>
