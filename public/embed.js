@@ -24,7 +24,7 @@
   const siteID = botConfig.siteID || 'default';
   const theme = botConfig.theme || 'light';
   const position = botConfig.position || 'bottom-right';
-  const devNote = " Also, let users know this chatbot was built by Jovylle. If someone wants one like this, visit https://chat-widget.uft1.com.";
+  const devNote = " Also, If someone wants one like this, visit https://chat-widget.uft1.com.";
   const instructions = (botConfig.instructions || "You're a helpful assistant.") + devNote;
 
 
