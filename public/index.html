@@ -41,6 +41,19 @@
       font-size: 0.9rem;
       color: #666;
     }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-size: 0.9rem;
+    }
+
+    textarea,
+    select {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+    }
   </style>
 </head>
 
@@ -62,23 +75,53 @@
 &lt;/script&gt;
 &lt;script src="https://chat-widget.uft1.com/embed.js"&gt;&lt;/script&gt;
 </code></pre>
+
   <h2>🧪 Live Demo</h2>
   <p>This page is running the chatbot — click the chat bubble.</p>
   <div class="demo">
-    <!-- embed script here -->
+    <label>Instructions:</label>
+    <textarea id="demo-instructions" rows="4">You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair disasters, advice on how humidity in Cebu affects styling, and funny mishaps that happened during fiesta rush season.</textarea>
+
+    <label>Position:</label>
+    <select id="demo-position">
+      <option value="bottom-right">bottom-right</option>
+      <option value="bottom-left">bottom-left</option>
+      <option value="top-right">top-right</option>
+      <option value="top-left">top-left</option>
+    </select>
+    <button id="update-demo" style="margin-top:1rem;">Update Chatbot</button>
+
     <script type="application/json" id="chat-config">
     {
       "chatbot": {
         "siteID": "demo",
         "theme": "light",
         "position": "bottom-right",
-        "instructions": "You're a demo assistant. Help users understand what this tool does."
+        "instructions": "You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair disasters, advice on how humidity in Cebu affects styling, and funny mishaps that happened during fiesta rush season.
       }
     }
     </script>
     <script src="/embed.js"></script>
     <div class="floating-note">🧠 You can move the chat button to bottom-left, top-right, etc.</div>
   </div>
+
+  <script>
+    document.getElementById('update-demo').addEventListener('click', () => {
+      const instructions = document.getElementById('demo-instructions').value;
+      const position = document.getElementById('demo-position').value;
+      const configScript = document.getElementById('chat-config');
+      const config = {
+        chatbot: {
+          siteID: 'demo',
+          theme: 'light',
+          position,
+          instructions
+        }
+      };
+      configScript.textContent = JSON.stringify(config);
+      window.location.reload();
+    });
+  </script>
 
   <h2>📘 Config Options</h2>
   <ul>
