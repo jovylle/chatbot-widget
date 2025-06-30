@@ -15,19 +15,14 @@
       --border: #ccc;
     }
 
-
     html.dark {
       --bg: #1e1e1e;
-      /* changed from #1a1a1a */
       --text: #f0f0f0;
       --primary: #555;
       --user-bg: #2a2a2a;
-      /* softened user bubble */
       --bot-bg: #2e2e2e;
-      /* softened bot bubble */
       --border: #444;
     }
-
 
     body {
       margin: 0;
@@ -98,6 +93,7 @@
     <input type="text" id="input" placeholder="Ask something..." autocomplete="off" />
     <button type="submit">Send</button>
   </form>
+
   <script>
     const chat = document.getElementById('chat');
     const form = document.getElementById('form');
@@ -106,24 +102,9 @@
     let instructions = "You're a helpful assistant.";
     let siteID = "default";
 
-    let messages = [];
+    // In-memory messages only (no sessionStorage)
+    const messages = [];
 
-    // Load previous messages from sessionStorage
-    const saved = sessionStorage.getItem('chatHistory');
-    if (saved) {
-      try {
-        messages = JSON.parse(saved);
-        messages.forEach(msg => addMsg(msg.content, msg.role));
-      } catch (e) {
-        console.warn('Failed to parse saved chat history.');
-      }
-    }
-
-    function saveChat () {
-      sessionStorage.setItem('chatHistory', JSON.stringify(messages));
-    }
-
-    // Add message to chat UI
     function addMsg (text, who = 'bot') {
       const div = document.createElement('div');
       div.className = 'msg ' + who;
@@ -132,7 +113,6 @@
       chat.scrollTop = chat.scrollHeight;
     }
 
-    // Handle form submit
     form.onsubmit = async (e) => {
       e.preventDefault();
       const msg = input.value.trim();
@@ -140,8 +120,6 @@
 
       addMsg(msg, 'user');
       messages.push({ role: 'user', content: msg });
-      saveChat();
-
       input.value = '';
 
       const res = await fetch('/.netlify/functions/chatbot', {
@@ -155,7 +133,6 @@
 
       addMsg(reply, 'bot');
       messages.push({ role: 'assistant', content: reply });
-      saveChat();
     };
 
     // Receive initial config from embed.js
@@ -165,18 +142,10 @@
         siteID = event.data.payload.siteID || siteID;
 
         const theme = event.data.payload.theme || 'light';
-
-        if (theme === 'dark') {
-          document.documentElement.classList.add('dark');
-          document.body.style.background = 'var(--bg)';
-        } else {
-          document.documentElement.classList.remove('dark');
-          document.body.style.background = 'var(--bg)';
-        }
+        document.documentElement.classList.toggle('dark', theme === 'dark');
       }
     });
   </script>
-  
 </body>
 
 </html>
