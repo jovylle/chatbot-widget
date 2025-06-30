@@ -8,10 +8,14 @@
       position: "bottom-right"
     }
   };
-
+  
+  let configScript = document.getElementById('chat-config');
+  if (!configScript) {
+    configScript = document.getElementById('chat-widget-config-001');
+  }
   try {
-    const configScript = document.getElementById('chat-config');
     if (!configScript) throw new Error("Missing <script id='chat-config'>");
+    
     const raw = configScript.textContent || configScript.innerText || '';
     const parsed = JSON.parse(raw);
     if (parsed.chatbot) config = parsed;

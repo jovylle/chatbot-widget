@@ -22,12 +22,9 @@ Basic config:
 Optional config with `siteID` and `position`:
 
 ```html
-<script type="application/json" id="chat-config">
+<script type="application/json" id="chat-widget-config-001">
 {
   "chatbot": {
-    "siteID": "your-site-id",
-    "theme": "light",
-    "position": "bottom-right",
     "instructions": "You're a helpful assistant for this site."
   }
 }
