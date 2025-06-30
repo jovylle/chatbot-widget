@@ -1,8 +1,14 @@
 
+### Netlify CLI Setup
 
-### Bonus Tip: Inside that `.md`, include this
+To run the local dev server:
 
-````md
+```bash
+npm install -g netlify-cli
+netlify dev
+````
+
+
 # 📦 ZIP Command
 
 ```bash
@@ -11,7 +17,7 @@ zip -r "chat-widget-$(date +%m%d%Y).zip" . \
   -x "package-lock.json" \
   -x ".env" \
   -x "*.zip"
-````
+```
 
 # 🧠 Notes
 
