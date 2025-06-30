@@ -37,11 +37,6 @@
       background: #fff;
     }
 
-    .floating-note {
-      font-size: 0.9rem;
-      color: #666;
-    }
-
     label {
       display: block;
       margin-top: 1rem;
@@ -49,10 +44,22 @@
     }
 
     textarea,
-    select {
+    select,
+    button {
       width: 100%;
       padding: 0.5rem;
       margin-top: 0.25rem;
+      font-size: 0.9rem;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .floating-note {
+      font-size: 0.9rem;
+      color: #666;
+      margin-top: 0.5rem;
     }
   </style>
 </head>
@@ -60,12 +67,10 @@
 <body>
 
   <h1>💬 chat-widget</h1>
-  <p>
-    Instantly embed a chatbot on any website. Lightweight. Configurable. Powered by GPT.
-  </p>
+  <p>Instantly embed a chatbot on any website. Lightweight. Configurable. Powered by GPT.</p>
 
   <h2>🚀 How to Use</h2>
-  <p>Paste this inside your HTML:</p>
+  <p>Paste this into your HTML:</p>
   <pre><code>&lt;script type="application/json" id="chat-widget-config-001"&gt;
 {
   "chatbot": {
@@ -77,57 +82,144 @@
 </code></pre>
 
   <h2>🧪 Live Demo</h2>
-  <p>This page is running the chatbot — click the chat bubble.</p>
+  <p>Use the form below to override instructions & position—no URL params will show, and the widget will update instantly.</p>
   <div class="demo">
-    <label for="demo-instructions">Instructions:</label>
-    <textarea id="demo-instructions" rows="4">You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair mishaps and tips for styling in our humid climate.</textarea>
+    <form id="demo-form">
+      <label for="demo-instructions">Instructions:</label>
+      <textarea id="demo-instructions" rows="4">You are an AI assistant for Bella, the owner of Sunset Avenue Salon in Cebu City. You help clients with expert hair-care advice, share behind-the-scenes salon stories, and offer tips on managing hair in our humid climate—all with Bella’s friendly touch.</textarea>
 
-    <label for="demo-position">Position:</label>
-    <select id="demo-position">
-      <option value="bottom-right">bottom-right</option>
-      <option value="bottom-left">bottom-left</option>
-      <option value="top-right">top-right</option>
-      <option value="top-left">top-left</option>
-    </select>
+      <label for="demo-position">Position:</label>
+      <select id="demo-position">
+        <option value="bottom-right">bottom-right</option>
+        <option value="bottom-left">bottom-left</option>
+        <option value="top-right">top-right</option>
+        <option value="top-left">top-left</option>
+      </select>
 
-    <button id="update-demo" style="margin-top:1rem;">Update Chatbot</button>
+      <button type="submit">Update Chatbot</button>
+    </form>
 
-    <!-- SINGLE, correctly-formed config script -->
+    <!-- fallback config JSON -->
     <script type="application/json" id="chat-widget-config-001">
     {
       "chatbot": {
         "siteID": "demo",
         "theme": "light",
         "position": "bottom-right",
-        "instructions": "You are Bella, a charming, witty, and helpful hairstylist from Sunset Avenue Salon in Cebu City. You not only give the best hair tips but also share juicy stories about local celebrities' hair mishaps and tips for styling in our humid climate."
+        "instructions": "You are an AI assistant for Bella, the owner of Sunset Avenue Salon in Cebu City. You help clients with expert hair-care advice, share behind-the-scenes salon stories, and offer tips on managing hair in our humid climate—all with Bella’s friendly touch."
       }
     }
     </script>
 
-    <script src="/embed.js"></script>
-    <div class="floating-note">🧠 You can move the chat button around using the Position selector above.</div>
+    <div class="floating-note">🧠 Edit the form above and hit “Update Chatbot” to see changes without reloading.</div>
   </div>
 
+  <!-- idempotent widget init -->
   <script>
-    document.getElementById('update-demo').addEventListener('click', () => {
-      const instructions = document.getElementById('demo-instructions').value;
-      const position = document.getElementById('demo-position').value;
-      const configScript = document.getElementById('chat-widget-config-001');
+    // parse fragment into { key: value }
+    function parseFragment () {
+      const hash = location.hash.slice(1);
+      return hash
+        ? Object.fromEntries(hash.split('&').map(pair => {
+          const [k, v] = pair.split('=');
+          return [decodeURIComponent(k), decodeURIComponent(v)];
+        }))
+        : {};
+    }
 
-      const newConfig = {
-        chatbot: {
-          siteID: 'demo',
-          theme: 'light',
-          position,
-          instructions
-        }
+    function initWidget () {
+      // 1) clean up old widget if present
+      document.getElementById('cw-button')?.remove();
+      document.getElementById('cw-wrapper')?.remove();
+
+      // 2) load fallback JSON config
+      let cfg = { chatbot: {} };
+      try {
+        const raw = document.getElementById('chat-widget-config-001').textContent;
+        cfg = JSON.parse(raw);
+      } catch (e) {
+        console.warn('Invalid fallback config JSON, using defaults.');
+      }
+      const bot = cfg.chatbot || {};
+
+      // 3) apply fragment overrides
+      const frag = parseFragment();
+      const instructions = frag.instructions || bot.instructions || "You're a helpful assistant.";
+      const position = frag.position || bot.position || 'bottom-right';
+      const siteID = bot.siteID || 'default';
+      const theme = bot.theme || 'light';
+      const devNote = " Also, if you want one like this visit https://chat-widget.uft1.com.";
+      const finalInstr = instructions + devNote;
+
+      // 4) determine offsets
+      const isBottom = position.includes('bottom');
+      const isRight = position.includes('right');
+      const btnOffset = `${isBottom ? 'bottom' : 'top'}:24px;${isRight ? 'right' : 'left'}:24px;`;
+
+      // 5) create button
+      const button = document.createElement('div');
+      button.id = 'cw-button';
+      button.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>`;
+      button.style = `
+        position: fixed; ${btnOffset}
+        width:48px; height:48px;
+        background:white; border:1px solid #ccc;
+        border-radius:50%; display:flex;
+        align-items:center;justify-content:center;
+        cursor:pointer; z-index:9999;
+        box-shadow:0 2px 6px rgba(0,0,0,0.1);
+      `;
+      button.onmouseenter = () => button.style.boxShadow = '0 0 6px rgba(0,0,0,0.15)';
+      button.onmouseleave = () => button.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
+      document.body.appendChild(button);
+
+      // 6) create wrapper + iframe
+      const wrap = document.createElement('div');
+      wrap.id = 'cw-wrapper';
+      wrap.style = `
+        position:fixed; ${isBottom ? 'bottom' : 'top'}:84px;
+        ${isRight ? 'right' : 'left'}:24px;
+        width:360px; height:480px;
+        display:none; z-index:9998;
+        border-radius:12px; overflow:hidden;
+        box-shadow:0 4px 20px rgba(0,0,0,0.3);
+      `;
+      const iframe = document.createElement('iframe');
+      const isLocal = location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+      const origin = isLocal ? 'http://localhost:8888' : 'https://chat-widget.uft1.com';
+      iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
+      iframe.style = 'width:100%;height:100%;border:none;';
+      wrap.appendChild(iframe);
+      document.body.appendChild(wrap);
+
+      // 7) toggle visibility
+      let open = false;
+      button.addEventListener('click', () => {
+        open = !open;
+        wrap.style.display = open ? 'block' : 'none';
+      });
+
+      // 8) postMessage on load
+      iframe.onload = () => {
+        iframe.contentWindow?.postMessage({
+          type: 'chat-config',
+          payload: { siteID, theme, instructions: finalInstr }
+        }, '*');
       };
+    }
 
-      // overwrite the JSON text
-      configScript.textContent = JSON.stringify(newConfig, null, 2);
+    // init on load and whenever the hash changes
+    window.addEventListener('DOMContentLoaded', initWidget);
+    window.addEventListener('hashchange', initWidget);
 
-      // reload to re-read the config and re-initialize
-      window.location.reload();
+    // wire up demo form to set location.hash
+    document.getElementById('demo-form').addEventListener('submit', e => {
+      e.preventDefault();
+      const instr = encodeURIComponent(document.getElementById('demo-instructions').value);
+      const pos = document.getElementById('demo-position').value;
+      location.hash = `instructions=${instr}&position=${pos}`;
     });
   </script>
 
@@ -140,7 +232,6 @@
   </ul>
 
   <p>📂 <a href="https://github.com/jovylle/chat-widget" target="_blank">View on GitHub</a></p>
-
 </body>
 
 </html>
