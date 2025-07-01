@@ -210,9 +210,19 @@
   box-shadow:0 4px 20px rgba(0,0,0,0.3);
   `;
       const iframe = document.createElement('iframe');
-      const isLocal = location.host === 'localhost:8888' || location.hostname === '127.0.0.1';
-      const origin = isLocal ? 'http://localhost:8888' : 'https://chat-widget.uft1.com';
-      iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(bot.siteID || 'demo')}&theme=${bot.theme || 'light'}`;
+      const thisScript = document.currentScript
+        || Array.from(document.getElementsByTagName('script'))
+          .find(s => s.src && s.src.match(/\/embed(?:\.min)?\.js(\?.*)?$/));
+
+      const scriptUrl = thisScript
+        ? new URL(thisScript.src, window.location.href)
+        : new URL('https://chat-widget.uft1.com/embed.js');
+
+      const basePath = scriptUrl.origin + scriptUrl.pathname.replace(/\/[^\/]+$/, '');
+
+      iframe.src = `${basePath}/widget.html?siteID=${encodeURIComponent(bot.siteID || 'demo')}&theme=${bot.theme || 'light'}`;
+
+      
       iframe.style = 'width:100%;height:100%;border:none;';
       wrap.appendChild(iframe);
       document.body.appendChild(wrap);
