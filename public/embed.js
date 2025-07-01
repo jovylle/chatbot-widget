@@ -93,12 +93,27 @@
 
   // 5. Create iframe
   const iframe = document.createElement('iframe');
-  const isLocal = window.location.host === "localhost:8888" || window.location.hostname === "127.0.0.1";
-  const origin = isLocal
-    ? "http://localhost:8888"
-    : "https://chat-widget.uft1.com";
 
-  iframe.src = `${origin}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
+  // Find the <script> that loaded this file
+  const thisScript = document.currentScript
+    || Array.from(document.getElementsByTagName('script'))
+      .find(s => s.src && s.src.match(/\/embed(?:\.min)?\.js(\?.*)?$/));
+
+  if (!thisScript) {
+    console.warn('Could not auto-detect embed.js script tag; falling back to default origin.');
+  }
+
+  // Build base URL from its src
+  const scriptUrl = thisScript
+    ? new URL(thisScript.src, window.location.href)
+    : new URL('https://chat-widget.uft1.com/embed.js');
+
+  // Remove the filename (embed.js) to get the folder
+  const baseUrl = scriptUrl.origin + scriptUrl.pathname.replace(/\/[^\/]+$/, '');
+
+  // Point iframe at the matching widget.html in that same folder
+  iframe.src = `${baseUrl}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
+
   iframe.style = `
     width: 100%;
     height: 100%;
