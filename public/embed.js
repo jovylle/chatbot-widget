@@ -93,7 +93,7 @@
 
   // 5. Create iframe
   const iframe = document.createElement('iframe');
-  const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+  const isLocal = window.location.host === "localhost:8888" || window.location.hostname === "127.0.0.1";
   const origin = isLocal
     ? "http://localhost:8888"
     : "https://chat-widget.uft1.com";
