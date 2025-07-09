@@ -84,6 +84,51 @@
       font-size: 14px;
       cursor: pointer;
     }
+
+    .msg.loading {
+      opacity: 0.7;
+      font-style: italic;
+      display: flex;
+      align-items: center;
+    }
+
+    .loading-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #ccc;
+      border-top: 2px solid var(--primary);
+      border-radius: 50%;
+      margin-right: 8px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% {
+        transform: rotate(0deg);
+      }
+
+      100% {
+        transform: rotate(360deg);
+      }
+    }
+
+    .preset-btn {
+      background: var(--user-bg);
+      color: var(--primary);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 0.5em 1em;
+      cursor: pointer;
+      font-size: 1em;
+      margin: 0.1em 0;
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .preset-btn:hover {
+      background: var(--primary);
+      color: #fff;
+    }
   </style>
   <!-- Cloudflare Web Analytics -->
   <script defer src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "a2a244b1e0a8477f8ec16b64ab2064ca"}'></script><!-- End Cloudflare Web Analytics -->
@@ -107,12 +152,58 @@
     // In-memory messages only (no sessionStorage)
     const messages = [];
 
-    function addMsg (text, who = 'bot') {
+    const presetQuestions = [
+      "What can you do for me?",
+      "How can I get a chatbot like you?",
+      "Tell me a fun fact.",
+      "What are your main features?"
+    ];
+
+    function renderWelcome() {
+      // Remove any existing welcome
+      const old = document.getElementById('welcome');
+      if (old) old.remove();
+
+      if (messages.length > 0) return;
+
+      const welcome = document.createElement('div');
+      welcome.id = 'welcome';
+      welcome.style = 'text-align:center; margin-top:2rem; color:var(--primary); opacity:0.8;';
+      welcome.innerHTML = `
+    <div style="font-size:1.1em; margin-bottom:1em;">👋 Hi! How can I help you today?</div>
+    <div id="presets" style="display:flex; flex-direction:column; gap:0.5em; align-items:center;"></div>
+  `;
+      chat.appendChild(welcome);
+
+      const presets = welcome.querySelector('#presets');
+      presetQuestions.forEach(q => {
+        const btn = document.createElement('button');
+        btn.textContent = q;
+        btn.className = 'preset-btn';
+        btn.onclick = () => {
+          input.value = q;
+          form.requestSubmit();
+        };
+        presets.appendChild(btn);
+      });
+    }
+
+    // Call on load and after each message
+    renderWelcome();
+
+    function addMsg (text, who = 'bot', isLoading = false) {
+      renderWelcome(); // Remove welcome if any message
       const div = document.createElement('div');
       div.className = 'msg ' + who;
-      div.textContent = text;
+      if (isLoading) {
+        div.innerHTML = `<span class="loading-spinner"></span> <span>${text}</span>`;
+        div.classList.add('loading');
+      } else {
+        div.textContent = text;
+      }
       chat.appendChild(div);
       chat.scrollTop = chat.scrollHeight;
+      return div;
     }
 
     form.onsubmit = async (e) => {
@@ -124,6 +215,9 @@
       messages.push({ role: 'user', content: msg });
       input.value = '';
 
+      // Add loading indicator
+      const loadingDiv = addMsg('Thinking...', 'bot', true);
+
       const res = await fetch('/.netlify/functions/chatbot', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -133,8 +227,13 @@
       const data = await res.json();
       const reply = data.reply || '[No reply]';
 
+      // Remove loading indicator
+      chat.removeChild(loadingDiv);
+
       addMsg(reply, 'bot');
       messages.push({ role: 'assistant', content: reply });
+
+      renderWelcome(); // Remove welcome after sending
     };
 
     // Receive initial config from embed.js
