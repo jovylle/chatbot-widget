@@ -49,4 +49,4 @@ This page has the chatbot running — click the bubble.
 | `position`     | `string` | `"bottom-right"` (default), `"bottom-left"`, `"top-right"`, `"top-left"` |
 | `instructions` | `string` | Prompt given to the GPT assistant                                        |
 
-📂 [View Source Code](https://github.com/jovylle/chat-widget)
+📂 [View Source Code](https://github.com/jovylle/chatbot-widget)
