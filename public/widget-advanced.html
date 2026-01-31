@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Advanced Chatbot</title>
+  <style>
+    :root {
+      --bg: #f8f8f8;
+      --text: #111;
+      --primary: #3f51b5;
+      --card: #fff;
+      --border: rgba(0,0,0,0.12);
+    }
+
+    html.dark {
+      --bg: #121212;
+      --text: #f5f5f5;
+      --primary: #7c4dff;
+      --card: #1f1f1f;
+      --border: rgba(255,255,255,0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    #widget-shell {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+      background: var(--card);
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 0.75rem;
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      font-weight: 600;
+      color: var(--text);
+      transition: background 0.2s, color 0.2s;
+    }
+
+    .tab-button.active {
+      background: rgba(63, 81, 181, 0.15);
+      color: var(--primary);
+    }
+
+    .tab-panel {
+      flex: 1;
+      padding: 1rem;
+      display: none;
+      overflow-y: auto;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    #chat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      max-height: calc(100% - 5rem);
+      overflow-y: auto;
+      padding-bottom: 1rem;
+    }
+
+    .msg {
+      margin: 0.25rem 0;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.65rem;
+      max-width: 90%;
+      white-space: pre-wrap;
+      font-size: 0.9rem;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: rgba(63, 81, 181, 0.18);
+      color: var(--text);
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: rgba(0, 0, 0, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    form {
+      display: flex;
+      border-top: 1px solid var(--border);
+      padding-top: 0.5rem;
+      gap: 0.5rem;
+    }
+
+    input {
+      flex: 1;
+      padding: 0.8rem;
+      border-radius: 0.65rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    button {
+      border: none;
+      border-radius: 0.65rem;
+      padding: 0 1rem;
+      font-size: 0.95rem;
+      cursor: pointer;
+      background: var(--primary);
+      color: #fff;
+    }
+
+    .preset-btn {
+      border-radius: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      width: 100%;
+      font-size: 0.9rem;
+    }
+
+    .loading-spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(0,0,0,0.2);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      margin-right: 0.35rem;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .notification {
+      padding: 0.85rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: rgba(63, 81, 181, 0.05);
+      margin-bottom: 0.5rem;
+    }
+
+    .notification h4 {
+      margin: 0 0 0.35rem;
+      font-size: 0.95rem;
+    }
+
+    .notification small {
+      color: rgba(0,0,0,0.5);
+    }
+
+    #expand-btn {
+      position: absolute;
+      right: 1rem;
+      bottom: 1rem;
+      border-radius: 999px;
+      padding: 0.35rem 1rem;
+      font-size: 0.85rem;
+      background: rgba(63, 81, 181, 0.9);
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    #expand-btn:hover {
+      opacity: 0.9;
+    }
+
+    #about-site,
+    #about-instructions {
+      font-size: 0.95rem;
+      line-height: 1.4;
+    }
+
+    .meta {
+      margin-top: 1rem;
+      font-size: 0.85rem;
+      color: rgba(0,0,0,0.6);
+    }
+
+    #clear-notifications {
+      margin-top: 0.75rem;
+      background: transparent;
+      border: 1px solid var(--primary);
+      color: var(--primary);
+      border-radius: 999px;
+      padding: 0.5rem 0.95rem;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="widget-shell">
+    <div class="tab-bar">
+      <button class="tab-button active" data-tab="chat">Chat</button>
+      <button class="tab-button" data-tab="about">About</button>
+      <button class="tab-button" data-tab="notifications">Notifications</button>
+    </div>
+
+    <section id="chat-tab" class="tab-panel active">
+      <div id="chat"></div>
+      <form id="form">
+        <input type="text" id="input" placeholder="Ask something..." autocomplete="off" />
+        <button type="submit">Send</button>
+      </form>
+    </section>
+
+    <section id="about-tab" class="tab-panel">
+      <h3>About this assistant</h3>
+      <p id="about-instructions">This chatbot uses creative prompts to guide responses.</p>
+      <p class="meta">Site ID: <span id="about-site">default</span></p>
+      <p class="meta">Variant: Extended UI</p>
+    </section>
+
+    <section id="notifications-tab" class="tab-panel">
+      <h3>Notifications</h3>
+      <div id="notifications-list"></div>
+      <button id="clear-notifications">Mark all read</button>
+    </section>
+  </div>
+  <button id="expand-btn">Full page</button>
+
+  <script>
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const expandBtn = document.getElementById('expand-btn');
+    const aboutSite = document.getElementById('about-site');
+    const aboutInstructions = document.getElementById('about-instructions');
+    const notificationsList = document.getElementById('notifications-list');
+    const clearNotifications = document.getElementById('clear-notifications');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    let instructions = "You're a helpful assistant.";
+    let siteID = "default";
+    let expanded = false;
+    const messages = [];
+
+    const presetQuestions = [
+      "What can you do for me?",
+      "How can I get a chatbot like you?",
+      "Tell me a fun fact.",
+      "What are your main features?"
+    ];
+
+    const notifications = [
+      { title: "New integration", body: "Realtime events now load faster.", time: "2m ago" },
+      { title: "AI upgrade", body: "Responses now include helpful summaries.", time: "12m ago" },
+      { title: "Deployment ready", body: "Your chatbot is live on production.", time: "1h ago" }
+    ];
+
+    function renderNotifications() {
+      if (notifications.length === 0) {
+        notificationsList.innerHTML = '<p style="opacity:0.7;">No new notifications.</p>';
+        return;
+      }
+      notificationsList.innerHTML = notifications.map(n => `
+        <article class="notification">
+          <h4>${n.title}</h4>
+          <p>${n.body}</p>
+          <small>${n.time}</small>
+        </article>
+      `).join('');
+    }
+
+    function renderWelcome() {
+      const old = document.getElementById('welcome');
+      if (old) old.remove();
+      if (messages.length > 0) return;
+      const welcome = document.createElement('div');
+      welcome.id = 'welcome';
+      welcome.style = 'text-align:center; margin-top:2rem; color:var(--primary); opacity:0.9;';
+      welcome.innerHTML = `
+        <div style="font-size:1.1rem; margin-bottom:1rem;">👋 Hi! How can I help?</div>
+        <div id="presets" style="display:flex; flex-direction:column; gap:0.4rem; align-items:center;"></div>
+      `;
+      chat.appendChild(welcome);
+
+      const presets = welcome.querySelector('#presets');
+      presetQuestions.forEach(q => {
+        const btn = document.createElement('button');
+        btn.textContent = q;
+        btn.className = 'preset-btn';
+        btn.style = 'background: transparent; border: 1px solid var(--border); color: var(--text); width: 100%; border-radius: 0.5rem;';
+        btn.onclick = () => {
+          input.value = q;
+          form.requestSubmit();
+        };
+        presets.appendChild(btn);
+      });
+    }
+
+    function setActiveTab(name) {
+      tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
+      panels.forEach(panel => panel.classList.toggle('active', panel.id === `${name}-tab`));
+      if (name === 'chat') {
+        renderWelcome();
+      }
+    }
+
+    function addMsg(text, who = 'bot', isLoading = false) {
+      renderWelcome();
+      const div = document.createElement('div');
+      div.className = 'msg ' + who;
+      if (isLoading) {
+        div.innerHTML = `<span class="loading-spinner"></span><span>${text}</span>`;
+        div.classList.add('loading');
+      } else {
+        div.textContent = text;
+      }
+      chat.appendChild(div);
+      chat.scrollTop = chat.scrollHeight;
+      return div;
+    }
+
+    form.onsubmit = async (e) => {
+      e.preventDefault();
+      const msg = input.value.trim();
+      if (!msg) return;
+      addMsg(msg, 'user');
+      messages.push({ role: 'user', content: msg });
+      input.value = '';
+      const loadingDiv = addMsg('Thinking...', 'bot', true);
+      const res = await fetch('/.netlify/functions/chatbot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages, instructions })
+      });
+      const data = await res.json();
+      const reply = data.reply || '[No reply]';
+      chat.removeChild(loadingDiv);
+      addMsg(reply, 'bot');
+      messages.push({ role: 'assistant', content: reply });
+    };
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => setActiveTab(button.dataset.tab));
+    });
+
+    expandBtn.addEventListener('click', () => {
+      expanded = !expanded;
+      window.parent.postMessage({ type: 'chat-advanced-expand', payload: { expanded } }, '*');
+      expandBtn.textContent = expanded ? 'Shrink window' : 'Full page';
+    });
+
+    clearNotifications.addEventListener('click', () => {
+      notifications.length = 0;
+      renderNotifications();
+      clearNotifications.disabled = true;
+      clearNotifications.textContent = 'All read';
+    });
+
+    window.addEventListener('message', (event) => {
+      const data = event.data || {};
+      if (data.type === 'chat-config') {
+        instructions = data.payload.instructions || instructions;
+        siteID = data.payload.siteID || siteID;
+        aboutInstructions.textContent = instructions;
+        aboutSite.textContent = siteID;
+        const theme = data.payload.theme || 'light';
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+      }
+
+      if (data.type === 'chat-advanced-expand-state') {
+        expanded = !!data.payload?.expanded;
+        expandBtn.textContent = expanded ? 'Shrink window' : 'Full page';
+      }
+    });
+
+    setActiveTab('chat');
+    renderNotifications();
+    renderWelcome();
+  </script>
+</body>
+
+</html>

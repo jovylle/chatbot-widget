@@ -33,6 +33,23 @@ Optional config with `siteID` and `position`:
 
 ```
 
+## ✨ Advanced widget
+
+If you want the tabbed interface with notifications and a full-page expand toggle, add a second config block and reference the extended embed bundle.
+
+```html
+<script type="application/json" id="chat-config-advanced">
+{
+  "chatbot": {
+    "theme": "dark",
+    "instructions": "You are an advanced assistant that keeps the site visitors informed."
+  }
+}
+</script>
+<script src="https://chat-widget.uft1.com/embed-extended.js"></script>
+```
+
+The advanced widget points to `widget-advanced.html`, which exposes the `Chat`, `About`, and `Notifications` tabs plus the “Full page” button inside the widget.
 
 ## 🧪 Live Demo
 
