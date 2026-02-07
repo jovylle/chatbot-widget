@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sunset Beach Resort · Concierge</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #fdf7f1;
+      --accent: #ff8b38;
+      --text: #1d1d1f;
+      --muted: rgba(29, 29, 31, 0.65);
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      padding: 2rem 3vw 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 3vw, 2.5rem);
+    }
+
+    p.lede {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1rem;
+    }
+
+    .hero {
+      background: #fff;
+      margin: 0 3vw;
+      border-radius: 24px;
+      padding: 2rem;
+      border: 1px solid rgba(255, 139, 56, 0.2);
+      box-shadow: 0 20px 45px rgba(255, 139, 56, 0.15);
+    }
+
+    .hero ul {
+      padding-left: 1rem;
+      color: var(--muted);
+    }
+
+    section.grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1rem;
+      padding: 2rem 3vw;
+    }
+
+    .card {
+      background: #fff;
+      border-radius: 16px;
+      padding: 1.25rem;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+    }
+
+    .card strong {
+      display: block;
+      font-size: 1rem;
+      margin-bottom: 0.2rem;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 2rem 3vw 3rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <p class="lede">Winter-ready concierge · Laguna Beach, CA</p>
+    <h1>Sunset Beach Resort Concierge</h1>
+    <p class="lede">Our chatbot answers concierge questions, highlights curated keepsakes, and guides guests toward the newest experiences.</p>
+  </header>
+
+  <div class="hero">
+    <p>Welcome to the new concierge experience. While the chat widget focuses on requests, the extended experience surfaces quick links to our spa, dining reservations, and the private events calendar.</p>
+    <ul>
+      <li>Always-on chat powered by GPT</li>
+      <li>Links to curated itineraries</li>
+      <li>Stats about guest satisfaction & availability</li>
+    </ul>
+  </div>
+
+  <section class="grid">
+    <div class="card">
+      <strong>Open for guests</strong>
+      <p>Our virtual concierge approves reservations, suggests coastal hikes, and shares live weather.</p>
+    </div>
+    <div class="card">
+      <strong>Spa & dining</strong>
+      <p>Quick links keep the latest menus and spa specials a tap away.</p>
+    </div>
+  </section>
+
+  <script type="application/json" id="chat-config-advanced-v2">
+{
+  "chatbot": {
+    "siteID": "sunset-resort",
+    "theme": "light",
+    "position": "bottom-left",
+    "accentColor": "#ff8b38",
+    "variant": "resort",
+    "tagline": "Get concierge-level answers instantly.",
+    "instructions": "You are the Sunset Beach Resort concierge. Guide guests to spa appointments, dining reservations, and local experiences with warmth.",
+    "quickLinks": [
+      { "label": "Spa rituals", "url": "https://chat-widget.uft1.com/resort/spa", "description": "Private treatments designed for island breezes." },
+      { "label": "Dining reservations", "url": "https://chat-widget.uft1.com/resort/dining", "description": "Book ocean-view seating and chef specials." },
+      { "label": "Events calendar", "url": "https://chat-widget.uft1.com/resort/events", "description": "See sunset concerts, wine tastings, and pop-ups." }
+    ],
+    "info": {
+      "headline": "40 minutes average response",
+      "summary": "Our concierge answers fire-side queries with curated insights and instantly surfaces the pages you need.",
+      "stats": [
+        { "label": "Spa slots open", "value": "24" },
+        { "label": "Guest rating", "value": "4.9/5" },
+        { "label": "Arrival prep", "value": "Ready" }
+      ]
+    }
+  }
+}
+  </script>
+  <script src="../embed-extended-v2.js"></script>
+
+  <footer>Sunset Beach Resort · Powered by chat-widget Extended v2</footer>
+</body>
+
+</html>

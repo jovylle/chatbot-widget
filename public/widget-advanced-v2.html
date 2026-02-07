@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Extended Chatbot v2</title>
+  <style>
+    :root {
+      --bg: #f6f6fb;
+      --card: #ffffff;
+      --text: #111;
+      --border: rgba(17, 17, 17, 0.08);
+      --primary: #3f51b5;
+      --accent: #3f51b5;
+      --muted-text: rgba(17, 17, 17, 0.65);
+    }
+
+    html.dark {
+      --bg: #0f1115;
+      --card: #161820;
+      --text: #f2f2ff;
+      --border: rgba(255, 255, 255, 0.15);
+      --primary: #89b4ff;
+      --muted-text: rgba(255, 255, 255, 0.65);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      padding: 1rem;
+    }
+
+    #widget-shell {
+      margin: auto;
+      width: min(480px, 100%);
+      background: var(--card);
+      border-radius: 18px;
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      max-height: calc(100vh - 2rem);
+    }
+
+    header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 1.2rem;
+      letter-spacing: -0.01em;
+    }
+
+    header p {
+      margin: 0.25rem 0 0;
+      font-size: 0.85rem;
+      color: var(--muted-text);
+    }
+
+    .host-instructions {
+      font-size: 0.77rem;
+      color: var(--muted-text);
+    }
+
+    .tab-bar {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--card);
+    }
+
+    .tab-button {
+      flex: 1;
+      padding: 0.85rem 0.5rem;
+      border: none;
+      background: transparent;
+      font-weight: 600;
+      color: var(--muted-text);
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .tab-button.active {
+      color: var(--primary);
+      border-bottom: 2px solid var(--primary);
+    }
+
+    .tab-panel {
+      padding: 1rem 1.25rem;
+      display: none;
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .tab-panel.active {
+      display: block;
+    }
+
+    #chat {
+      display: flex;
+      flex-direction: column;
+      gap: 0.625rem;
+      max-height: calc(100% - 5rem);
+      overflow-y: auto;
+      padding-bottom: 0.75rem;
+    }
+
+    .msg {
+      padding: 0.65rem 0.9rem;
+      border-radius: 0.9rem;
+      max-width: 88%;
+      font-size: 0.92rem;
+      line-height: 1.3;
+      word-break: break-word;
+    }
+
+    .msg.user {
+      align-self: flex-end;
+      background: rgba(63, 81, 181, 0.16);
+      color: var(--text);
+    }
+
+    .msg.bot {
+      align-self: flex-start;
+      background: rgba(17, 17, 17, 0.04);
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    form {
+      display: flex;
+      gap: 0.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 0.5rem;
+      margin-top: 0.5rem;
+    }
+
+    input {
+      flex: 1;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      padding: 0.7rem 1rem;
+      font-size: 0.9rem;
+      background: transparent;
+      color: var(--text);
+    }
+
+    button[type="submit"] {
+      border: none;
+      border-radius: 999px;
+      background: var(--accent);
+      color: white;
+      padding: 0 1.1rem;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .preset-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.35rem;
+      margin: 0.45rem 0;
+    }
+
+    .preset-row button {
+      border-radius: 0.6rem;
+      border: 1px solid var(--border);
+      background: transparent;
+      color: var(--text);
+      font-size: 0.84rem;
+      cursor: pointer;
+      padding: 0.45rem 0.6rem;
+    }
+
+    #links-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .link-card {
+      display: block;
+      padding: 0.9rem;
+      border-radius: 0.9rem;
+      border: 1px solid var(--border);
+      text-decoration: none;
+      background: rgba(63, 81, 181, 0.04);
+      color: var(--text);
+      transition: border-color 0.2s, transform 0.2s;
+    }
+
+    .link-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-1px);
+    }
+
+    .link-card h4 {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .link-card p {
+      margin: 0.35rem 0 0;
+      font-size: 0.82rem;
+      color: var(--muted-text);
+    }
+
+    .info-headline {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+    }
+
+    .info-summary {
+      margin: 0.35rem 0 1rem;
+      color: var(--muted-text);
+      font-size: 0.88rem;
+      line-height: 1.4;
+    }
+
+    .info-stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .info-stat {
+      padding: 0.75rem;
+      border-radius: 0.8rem;
+      border: 1px solid var(--border);
+      background: rgba(63, 81, 181, 0.04);
+    }
+
+    .info-stat strong {
+      display: block;
+      font-size: 1rem;
+    }
+
+    .meta-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 0.75rem 1.25rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.85rem;
+      color: var(--muted-text);
+    }
+
+    .accent-pill {
+      border-radius: 999px;
+      padding: 0.2rem 0.75rem;
+      background: rgba(63, 81, 181, 0.12);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    #expand-btn {
+      position: fixed;
+      right: 1rem;
+      bottom: 1rem;
+      border-radius: 999px;
+      padding: 0.55rem 1.1rem;
+      border: none;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 30px rgba(52, 102, 240, 0.35);
+    }
+
+    .loading-spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(0, 0, 0, 0.1);
+      border-top-color: var(--accent);
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-right: 0.4rem;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div id="widget-shell">
+    <header>
+    <div>
+        <h1>Friendly host assistant</h1>
+        <p id="widget-tagline">Details, quick links, and the chatbot in one panel.</p>
+        <p id="about-instructions" class="host-instructions">This assistant keeps the site visitors informed and ready to act.</p>
+      </div>
+      <button id="expand-btn" class="expand-mini">Full page</button>
+    </header>
+
+    <div class="tab-bar">
+      <button class="tab-button active" data-tab="chat">Chat</button>
+      <button class="tab-button" data-tab="links">Quick links</button>
+      <button class="tab-button" data-tab="info">Host info</button>
+    </div>
+
+    <section id="chat-tab" class="tab-panel active">
+      <div id="chat"></div>
+      <form id="form">
+        <input type="text" id="input" autocomplete="off" placeholder="Ask something..." />
+        <button type="submit">Send</button>
+      </form>
+      <div id="welcome-preset" style="margin-top:0.5rem;"></div>
+    </section>
+
+    <section id="links-tab" class="tab-panel">
+      <div id="links-list"></div>
+    </section>
+
+    <section id="info-tab" class="tab-panel">
+      <h3 class="info-headline" id="info-headline">Built for modern teams</h3>
+      <p class="info-summary" id="info-summary">Share context, policies, or offers right next to chat so visitors get just-in-time help.</p>
+      <div class="info-stats" id="info-stats"></div>
+    </section>
+
+    <div class="meta-row">
+      <span>Site ID: <strong id="about-site">default</strong></span>
+      <span class="accent-pill" id="variant-pill">Variant: v2</span>
+    </div>
+  </div>
+  <script>
+    const chat = document.getElementById('chat');
+    const form = document.getElementById('form');
+    const input = document.getElementById('input');
+    const expandBtn = document.getElementById('expand-btn');
+    const widgetTagline = document.getElementById('widget-tagline');
+    const aboutInstructions = document.getElementById('about-instructions');
+    const aboutSite = document.getElementById('about-site');
+    const variantPill = document.getElementById('variant-pill');
+    const linksList = document.getElementById('links-list');
+    const infoHeadline = document.getElementById('info-headline');
+    const infoSummary = document.getElementById('info-summary');
+    const infoStats = document.getElementById('info-stats');
+    const welcomePreset = document.getElementById('welcome-preset');
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const panels = document.querySelectorAll('.tab-panel');
+
+    const presetQuestions = [
+      "What can this assistant do?",
+      "Tell me something new.",
+      "Give me a quick tour.",
+      "How do I customize a quick link?"
+    ];
+
+    const defaultLinks = [
+      { label: "Launch checklist", url: "https://chat-widget.uft1.com/checklist", description: "Step-by-step items to review before going live.", category: "Checklist" },
+      { label: "Support hub", url: "https://chat-widget.uft1.com/support", description: "Contact the team, share logs, or request a feature.", category: "Help" },
+      { label: "Partner tools", url: "https://chat-widget.uft1.com/partners", description: "Integrations, docs, and co-marketing resources in one page.", category: "Resources" }
+    ];
+
+    const defaultInfo = {
+      headline: "Share context that matters",
+      summary: "Drop links, updates, or quick stats so visitors learn what’s new while chatting.",
+      stats: [
+        { label: "Automations ready", value: "120+" },
+        { label: "Response time", value: "Instant" },
+        { label: "Active sites", value: "450+" }
+      ]
+    };
+
+    let instructions = "You're a helpful assistant.";
+    let siteID = "default";
+    let variant = "v2";
+    let quickLinks = [...defaultLinks];
+    let hostInfo = { ...defaultInfo };
+    let expanded = false;
+    const messages = [];
+
+    aboutInstructions.textContent = instructions;
+
+    function renderQuickLinks(items = quickLinks) {
+      linksList.innerHTML = '';
+      if (!items.length) {
+        linksList.innerHTML = '<p style="color:var(--muted-text);">No links provided yet.</p>';
+        return;
+      }
+      items.forEach(link => {
+        const anchor = document.createElement('a');
+        anchor.href = link.url || '#';
+        anchor.target = "_blank";
+        anchor.rel = "noreferrer";
+        anchor.className = 'link-card';
+
+        const title = document.createElement('h4');
+        title.textContent = link.label || 'Quick link';
+        anchor.appendChild(title);
+
+        const desc = document.createElement('p');
+        desc.textContent = link.description || 'Open in a new tab';
+        anchor.appendChild(desc);
+
+        linksList.appendChild(anchor);
+      });
+    }
+
+    function renderInfo(data = hostInfo) {
+      hostInfo = { ...hostInfo, ...data };
+      infoHeadline.textContent = hostInfo.headline;
+      infoSummary.textContent = hostInfo.summary;
+
+      infoStats.innerHTML = '';
+      const stats = Array.isArray(hostInfo.stats) ? hostInfo.stats : [];
+      stats.forEach(stat => {
+        const tile = document.createElement('div');
+        tile.className = 'info-stat';
+        const value = document.createElement('strong');
+        value.textContent = stat.value || stat.label || '-';
+        tile.appendChild(value);
+        const label = document.createElement('div');
+        label.textContent = stat.label || 'Metric';
+        tile.appendChild(label);
+        infoStats.appendChild(tile);
+      });
+    }
+
+    function renderWelcome() {
+      welcomePreset.innerHTML = '';
+      if (messages.length > 0) return;
+      const container = document.createElement('div');
+      container.style.textAlign = 'center';
+      container.innerHTML = '<p style="margin:0 0 0.3rem; color:var(--muted-text); font-size:0.85rem;">Start with a suggestion</p>';
+      const row = document.createElement('div');
+      row.className = 'preset-row';
+      presetQuestions.forEach(q => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.textContent = q;
+        btn.onclick = () => {
+          input.value = q;
+          form.dispatchEvent(new Event('submit', { cancelable: true }));
+        };
+        row.appendChild(btn);
+      });
+      container.appendChild(row);
+      welcomePreset.appendChild(container);
+    }
+
+    function setActiveTab(name) {
+      tabButtons.forEach(btn => btn.classList.toggle('active', btn.dataset.tab === name));
+      panels.forEach(panel => panel.classList.toggle('active', panel.id === `${name}-tab`));
+      if (name === 'chat') {
+        renderWelcome();
+      }
+    }
+
+    function addMsg(text, who = 'bot', loading = false) {
+      renderWelcome();
+      const bubble = document.createElement('div');
+      bubble.className = `msg ${who}`;
+      if (loading) {
+        bubble.innerHTML = `<span class="loading-spinner"></span><span>${text}</span>`;
+        bubble.classList.add('loading');
+      } else {
+        bubble.textContent = text;
+      }
+      chat.appendChild(bubble);
+      chat.scrollTop = chat.scrollHeight;
+      return bubble;
+    }
+
+    form.addEventListener('submit', async (event) => {
+      event.preventDefault();
+      const value = input.value.trim();
+      if (!value) return;
+      addMsg(value, 'user');
+      messages.push({ role: 'user', content: value });
+      input.value = '';
+      const loadingNode = addMsg('Thinking...', 'bot', true);
+      try {
+        const response = await fetch('/.netlify/functions/chatbot', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages, instructions })
+        });
+        const data = await response.json();
+        const reply = data.reply || 'Sorry, something went wrong.';
+        loadingNode.remove();
+        addMsg(reply, 'bot');
+        messages.push({ role: 'assistant', content: reply });
+      } catch (error) {
+        loadingNode.remove();
+        addMsg('The chatbot could not connect. Please try again soon.', 'bot');
+        console.error(error);
+      }
+    });
+
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => setActiveTab(button.dataset.tab));
+    });
+
+    expandBtn.addEventListener('click', () => {
+      expanded = !expanded;
+      window.parent.postMessage({ type: 'chat-advanced-v2-expand', payload: { expanded } }, '*');
+      expandBtn.textContent = expanded ? 'Shrink window' : 'Full page';
+    });
+
+    window.addEventListener('message', (event) => {
+      const data = event.data || {};
+      if (data.type === 'chat-config-v2') {
+        instructions = data.payload.instructions || instructions;
+        siteID = data.payload.siteID || siteID;
+        variant = data.payload.variant || variant;
+        const tagline = data.payload.tagline;
+        const accentColor = data.payload.accentColor;
+        const theme = data.payload.theme || 'light';
+
+        aboutSite.textContent = siteID;
+        variantPill.textContent = `Variant: ${variant}`;
+        widgetTagline.textContent = tagline || widgetTagline.textContent;
+        aboutInstructions.textContent = instructions;
+        document.documentElement.classList.toggle('dark', theme === 'dark');
+        if (accentColor) {
+          document.documentElement.style.setProperty('--accent', accentColor);
+          document.documentElement.style.setProperty('--primary', accentColor);
+        }
+        if (Array.isArray(data.payload.quickLinks)) {
+          quickLinks = data.payload.quickLinks;
+          renderQuickLinks(quickLinks);
+        }
+        if (typeof data.payload.info === 'object') {
+          renderInfo(data.payload.info);
+        } else {
+          renderQuickLinks();
+          renderInfo();
+        }
+      }
+
+      if (data.type === 'chat-advanced-expand-state') {
+        expanded = !!data.payload?.expanded;
+        expandBtn.textContent = expanded ? 'Shrink window' : 'Full page';
+      }
+    });
+
+    renderQuickLinks();
+    renderInfo();
+    renderWelcome();
+    setActiveTab('chat');
+  </script>
+</body>
+
+</html>

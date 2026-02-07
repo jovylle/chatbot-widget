@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chat-widget Extended v2</title>
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      margin: 0;
+      background: #0f1320;
+      color: #f5f7ff;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    main {
+      width: min(900px, 100%);
+      background: #11131d;
+      border-radius: 18px;
+      padding: 2rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    h1 {
+      margin: 0 0 0.75rem;
+      font-size: 2rem;
+    }
+
+    h2 {
+      font-size: 1.1rem;
+      margin-bottom: 0.25rem;
+    }
+
+    p {
+      margin: 0 0 1rem;
+      color: rgba(245, 247, 255, 0.8);
+    }
+
+    .section {
+      margin-bottom: 1.5rem;
+    }
+
+    .badges {
+      display: flex;
+      gap: 0.6rem;
+      flex-wrap: wrap;
+      margin-bottom: 0.75rem;
+    }
+
+    .badge {
+      padding: 0.35rem 0.9rem;
+      border-radius: 999px;
+      background: rgba(63, 81, 181, 0.25);
+      font-size: 0.8rem;
+      color: #c7d0ff;
+    }
+
+    .feature-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0.75rem;
+    }
+
+    .feature-list li {
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    pre {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 1rem;
+      overflow-x: auto;
+      margin: 0;
+      font-size: 0.85rem;
+      line-height: 1.4;
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+    }
+
+    code {
+      font-family: 'JetBrains Mono', 'SFMono-Regular', monospace;
+      color: #f9f9ff;
+    }
+
+    .demo-note {
+      font-size: 0.85rem;
+      color: rgba(245, 247, 255, 0.7);
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <h1>chat-widget Extended v2</h1>
+    <p>Version two of the embedded experience adds multiple tabs, quick links, host info, and a configurable “maximize” plan without changing the original embed.js.</p>
+
+    <div class="section">
+      <div class="badges">
+        <span class="badge">Multi-tab</span>
+        <span class="badge">Quick links</span>
+        <span class="badge">Host info</span>
+        <span class="badge">Full-page toggle</span>
+      </div>
+      <ul class="feature-list">
+        <li><strong>Chat</strong><br />Same GPT chat, but with presets plus a pinned header.</li>
+        <li><strong>Quick links</strong><br />Surface important docs, promos, or partner content inside the widget.</li>
+        <li><strong>Host info</strong><br />Show stats, headlines, and summaries tailored per embed.</li>
+        <li><strong>Custom branding</strong><br />Pass an accent color, tagline, and variant name from the host page.</li>
+      </ul>
+    </div>
+
+    <div class="section">
+      <h2>How to embed</h2>
+      <p>Drop the config block and <code>embed-extended-v2.js</code> onto your page and the floating button will spin up the new widget.</p>
+      <pre><code id="embed-snippet"></code></pre>
+      <p class="demo-note">The snippet above matches the config powering this demo page.</p>
+    </div>
+
+    <div class="section">
+      <h2>Quick link payload</h2>
+      <p>Use the <code>quickLinks</code> array to feed each card with a <code>label</code>, <code>url</code>, and <code>description</code>. The widget will keep your visitors inside the chat bubble while pointing them somewhere important.</p>
+    </div>
+  </main>
+
+  <script type="application/json" id="chat-config-advanced-v2">
+{
+  "chatbot": {
+    "siteID": "extended-v2-demo",
+    "theme": "dark",
+    "position": "bottom-right",
+    "accentColor": "#4c6ef5",
+    "variant": "pro",
+    "tagline": "Chat, links, and context in a single panel.",
+    "instructions": "You are the new & improved concierge that keeps the customer informed about releases and links them to useful pages.",
+    "quickLinks": [
+      { "label": "Launch checklist", "url": "https://chat-widget.uft1.com/checklist", "description": "Walk through what needs to launch on your site." },
+      { "label": "Partner gallery", "url": "https://chat-widget.uft1.com/partners", "description": "Showcase integrations, co-marketing kits, and proofs." },
+      { "label": "Support desk", "url": "https://chat-widget.uft1.com/support", "description": "Open a ticket or chat with our team in minutes." }
+    ],
+    "info": {
+      "headline": "The perfect concierge for your site",
+      "summary": "Add curated links and context next to chat so visitors feel guided instead of dropped into the void.",
+      "stats": [
+        { "label": "Automations ready", "value": "120+" },
+        { "label": "Response time", "value": "Instant" },
+        { "label": "Active sites", "value": "450+" }
+      ]
+    }
+  }
+}
+  </script>
+  <script src="./embed-extended-v2.js"></script>
+
+  <script>
+    const configScript = document.getElementById('chat-config-advanced-v2');
+    const snippetTarget = document.getElementById('embed-snippet');
+    if (configScript && snippetTarget) {
+      const configContent = configScript.textContent.trim();
+      const snippet = `<script type="application/json" id="chat-config-advanced-v2">\n${configContent}\n</script>\n<script src="./embed-extended-v2.js"></script>`;
+      snippetTarget.textContent = snippet;
+    }
+  </script>
+</body>
+
+</html>

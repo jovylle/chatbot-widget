@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hearth & Co. Marketplace</title>
+  <style>
+    :root {
+      --bg: #0c0f16;
+      --text: #f7f7ff;
+      --accent: #1ed760;
+      --muted: rgba(247, 247, 255, 0.75);
+    }
+
+    body {
+      margin: 0;
+      background: linear-gradient(135deg, #0c0f16 0%, #1a1f2b 100%);
+      min-height: 100vh;
+      font-family: 'Inter', system-ui, sans-serif;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      padding: 3rem 1.5rem;
+    }
+
+    .shell {
+      width: min(960px, 100%);
+      background: rgba(15, 18, 30, 0.9);
+      border-radius: 24px;
+      padding: 2rem 2.5rem;
+      box-shadow: 0 25px 60px rgba(0, 0, 0, 0.55);
+      border: 1px solid rgba(30, 215, 96, 0.2);
+    }
+
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: clamp(2rem, 3rem, 2.8rem);
+    }
+
+    .lede {
+      margin: 0;
+      color: var(--muted);
+      font-size: 1.05rem;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-top: 2rem;
+    }
+
+    .card {
+      padding: 1.2rem;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .card strong {
+      display: block;
+      margin-bottom: 0.4rem;
+    }
+
+    footer {
+      margin-top: 3rem;
+      font-size: 0.85rem;
+      color: var(--muted);
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="shell">
+    <p class="lede">Global marketplace · curated makers</p>
+    <h1>Hearth & Co. Concierge Stream</h1>
+    <p class="lede">Give shoppers direct answers about shipping, artisan makers, and seasonal drops using the extended widget.</p>
+
+    <div class="grid">
+      <div class="card">
+        <strong>Drop board</strong>
+        <p>Call out limited edits, restocks, and shipping windows without leaving the storefront.</p>
+      </div>
+      <div class="card">
+        <strong>Behind the scenes</strong>
+        <p>Share maker interviews and community stories alongside the chat bubble.</p>
+      </div>
+      <div class="card">
+        <strong>Customer care</strong>
+        <p>Quick links route visitors to returns, support, and wholesale inquiries.</p>
+      </div>
+    </div>
+  </div>
+
+  <script type="application/json" id="chat-config-advanced-v2">
+{
+  "chatbot": {
+    "siteID": "hearth-marketplace",
+    "theme": "dark",
+    "position": "bottom-right",
+    "accentColor": "#1ed760",
+    "variant": "marketplace",
+    "tagline": "Hearth & Co. concierge for modern shoppers.",
+    "instructions": "You are Hearth & Co.’s concierge. Respond with curated maker profiles, shipping options, and updates on new arrivals.",
+    "quickLinks": [
+      { "label": "New collection", "url": "https://chat-widget.uft1.com/marketplace/new", "description": "Limited-release furniture and art pieces." },
+      { "label": "Wholesale requests", "url": "https://chat-widget.uft1.com/marketplace/wholesale", "description": "Invite boutiques to collaborate." },
+      { "label": "Support & returns", "url": "https://chat-widget.uft1.com/marketplace/support", "description": "Track packages and file returns quickly." }
+    ],
+    "info": {
+      "headline": "Maker stories, merch, and service",
+      "summary": "Quick stats about drops keep shoppers confident before they type a question.",
+      "stats": [
+        { "label": "Artisans featured", "value": "82" },
+        { "label": "Next drop time", "value": "2 days" },
+        { "label": "Response rating", "value": "⭐ 4.8" }
+      ]
+    }
+  }
+}
+  </script>
+  <script src="../embed-extended-v2.js"></script>
+
+  <footer>Прототип · Hearth & Co. · chat-widget Extended v2</footer>
+</body>
+
+</html>

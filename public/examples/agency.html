@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Northwind Creative · Agency Desk</title>
+  <style>
+    :root {
+      --bg: #070b18;
+      --text: #f7f7fc;
+      --muted: rgba(247, 247, 252, 0.7);
+      --accent: #7c6cff;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    main {
+      margin: 0 auto;
+      padding: 3rem 4vw;
+      max-width: 960px;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      align-items: start;
+    }
+
+    h1 {
+      margin: 0 0 0.25rem;
+      font-size: clamp(2rem, 4vw, 2.6rem);
+    }
+
+    .lede {
+      color: var(--muted);
+      margin-bottom: 2rem;
+    }
+
+    .panel {
+      background: rgba(255, 255, 255, 0.03);
+      border-radius: 16px;
+      padding: 1.5rem;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel h2 {
+      margin-top: 0;
+      margin-bottom: 0.75rem;
+      font-size: 1.15rem;
+    }
+
+    .panel ul {
+      padding-left: 1.2rem;
+      color: var(--muted);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.85rem;
+      color: var(--accent);
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 2rem 4vw;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <section class="panel">
+      <div class="tag">Northwind Creative</div>
+      <h1>Agency desk for enterprise launches</h1>
+      <p class="lede">Our visitors want case studies, media kits, and a quick way to message the launch team without leaving the page.</p>
+      <ul>
+        <li>Track campaigns, send documents, and surface partnership links inside the widget.</li>
+        <li>The chatbot is tuned to share pricing, timelines, and creative direction.</li>
+        <li>Quick links keep collaborators on-brand and informed.</li>
+      </ul>
+    </section>
+
+    <section class="panel">
+      <h2>👩‍💼 Service highlights</h2>
+      <p>Frescos, research decks, and brand guidelines live in the chatbot for partners who prefer chat over nav bars.</p>
+    </section>
+
+    <section class="panel">
+      <h2>🚀 Launch readiness</h2>
+      <p>Embed Extended v2 and feed the widget with stats, links, and preset prompts so every brief feels tailored.</p>
+    </section>
+  </main>
+
+  <script type="application/json" id="chat-config-advanced-v2">
+{
+  "chatbot": {
+    "siteID": "northwind-agency",
+    "theme": "dark",
+    "position": "top-right",
+    "accentColor": "#7c6cff",
+    "variant": "agency",
+    "tagline": "Partner-ready context with a creative twist.",
+    "instructions": "You are Northwind Creative’s agency desk. Share case studies, media options, and scheduling info with confident energy.",
+    "quickLinks": [
+      { "label": "Media kits", "url": "https://chat-widget.uft1.com/agency/media", "description": "Branded decks and press-ready assets." },
+      { "label": "Campaign playbook", "url": "https://chat-widget.uft1.com/agency/playbook", "description": "Activation steps for enterprise launches." },
+      { "label": "Collab calendar", "url": "https://chat-widget.uft1.com/agency/calendar", "description": "Invite the creative team to sync in minutes." }
+    ],
+    "info": {
+      "headline": "3 min average response",
+      "summary": "Launch partners get recommendations without jumping between tabs. The widget mirrors the look they already trust.",
+      "stats": [
+        { "label": "Assets served", "value": "320+" },
+        { "label": "Partners active", "value": "58" },
+        { "label": "Campaigns this quarter", "value": "21" }
+      ]
+    }
+  }
+}
+  </script>
+  <script src="../embed-extended-v2.js"></script>
+
+  <footer>Northwind Creative · Embedded with chat-widget Extended v2</footer>
+</body>
+
+</html>
