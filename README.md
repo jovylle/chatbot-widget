@@ -126,4 +126,19 @@ This page has the chatbot running — click the bubble.
 | `position`     | `string` | `"bottom-right"` (default), `"bottom-left"`, `"top-right"`, `"top-left"` |
 | `instructions` | `string` | Prompt given to the GPT assistant                                        |
 
+### Optional v1 extras
+
+`embed.js` also accepts a few extra fields so you can polish the floating trigger and add nicer controls without touching the widget:
+
+| Field          | Type      | Description |
+|----------------|-----------|-------------|
+| `accentColor`  | `string`  | Hex color for the button border, tooltip, and header gradient (defaults to `#3f51b5`). |
+| `buttonLabel`  | `string`  | Tiny label under the icon (`Chat` by default). |
+| `tooltipText`  | `string`  | Hover text shown above the button (`Ask anything` by default). |
+| `widgetTitle`  | `string`  | Title placed inside the header above the iframe (`Chat with us`). |
+| `autoOpen`     | `boolean` | If `true`, the widget opens automatically after loading (defaults to `false`). |
+| `closeOnBlur`  | `boolean` | When `true`, clicking outside the panel or pressing `Esc` closes it (defaults to `true`). |
+
+These additions also include a pulsing status dot, hovered tooltip, and a close button inside the header so the experience feels a little more like a concierge tool.
+
 📂 [View Source Code](https://github.com/jovylle/chatbot-widget)
