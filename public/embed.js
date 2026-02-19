@@ -1,5 +1,15 @@
 (function () {
-  // 1. Load and parse chatbot config from <script id="chat-config">
+  // Clean up a previous embed instance (useful for demo pages that reload embed.js).
+  document.getElementById('cw-button')?.remove();
+  document.getElementById('cw-wrapper')?.remove();
+  document.getElementById('cw-pulse-style')?.remove();
+
+  // 1. Load and parse chatbot config.
+  // Priority order:
+  //  A) <script id="chat-config"> or id "chat-widget-config-001"
+  //  B) Any <script type="application/json"> on the page that contains a top-level "chatbot" key
+  //  C) data-* attributes on the <script src=".../embed.js"> tag (convenient for hosts)
+  //  D) window.chatWidgetConfig global
   let config = {
     chatbot: {
       instructions: "You're a helpful assistant.",
@@ -8,27 +18,67 @@
       position: "bottom-right"
     }
   };
-  
-  let configScript = document.getElementById('chat-config');
+
+  const parseJsonSafe = (raw) => {
+    try {
+      return raw ? JSON.parse(raw) : null;
+    } catch (_) {
+      return null;
+    }
+  };
+
+  // A: Named ids
+  let configScript = document.getElementById('chat-config') || document.getElementById('chat-widget-config-001');
+
+  // B: any application/json script that contains chatbot
   if (!configScript) {
-    configScript = document.getElementById('chat-widget-config-001');
-  }
-  try {
-    if (!configScript) throw new Error("Missing <script id='chat-config'>");
-    
-    const raw = configScript.textContent || configScript.innerText || '';
-    const parsed = JSON.parse(raw);
-    if (parsed.chatbot) config = parsed;
+    const jsonScripts = Array.from(document.querySelectorAll('script[type="application/json"]'));
+    for (const s of jsonScripts) {
+      const parsed = parseJsonSafe(s.textContent || s.innerText || '');
+      if (parsed && parsed.chatbot) {
+        configScript = s;
+        config = parsed;
+        break;
+      }
+    }
+  } else {
+    const parsed = parseJsonSafe(configScript.textContent || configScript.innerText || '');
+    if (parsed && parsed.chatbot) config = parsed;
     else console.warn("chat-config JSON missing 'chatbot' key. Using defaults.");
-  } catch (err) {
-    console.error("⚠️ Failed to load chatbot config:", err);
   }
+
+  // C: data-* attributes on this script tag (override defaults or JSON)
+  const thisScript = document.currentScript
+    || Array.from(document.getElementsByTagName('script'))
+      .find(s => s.src && s.src.match(/\/embed(?:\.min)?\.js(\?.*)?$/));
+
+  if (!configScript && thisScript) {
+    const ds = thisScript.dataset || {};
+    if (Object.keys(ds).length) {
+      config.chatbot = config.chatbot || {};
+      if (ds.siteid) config.chatbot.siteID = ds.siteid;
+      if (ds.theme) config.chatbot.theme = ds.theme;
+      if (ds.position) config.chatbot.position = ds.position;
+      if (ds.instructions) config.chatbot.instructions = ds.instructions;
+      if (ds.accentColor) config.chatbot.accentColor = ds.accentColor;
+      if (ds.widgetTitle) config.chatbot.widgetTitle = ds.widgetTitle;
+      if (ds.buttonLabel) config.chatbot.buttonLabel = ds.buttonLabel;
+    }
+  }
+
+  // D: global fallback
+  if (window.chatWidgetConfig && window.chatWidgetConfig.chatbot) {
+    config = window.chatWidgetConfig;
+  }
+
+  // If still no named configScript was used but a generic script was found earlier, we already set config.
+  // If none was found, config remains the defaults or modified by data-*.
 
   const botConfig = config.chatbot || {};
   const siteID = botConfig.siteID || 'default';
   const theme = botConfig.theme || 'light';
   const position = botConfig.position || 'bottom-right';
-  const accentColor = botConfig.accentColor || '#3f51b5';
+  const accentColor = botConfig.accentColor || '#2a2a2a';
   const widgetTitle = botConfig.widgetTitle || 'Chat with us';
   const buttonLabel = botConfig.buttonLabel || 'Chat';
   const tooltipText = botConfig.tooltipText || 'Ask anything';
@@ -36,7 +86,20 @@
   const closeOnBlur = botConfig.closeOnBlur ?? true;
   const devNote = " Also, If someone wants chatbot like this, visit https://chat-widget.uft1.com.";
   const instructions = (botConfig.instructions || "You're a helpful assistant.") + devNote;
-
+  const parseInitialMessages = (value) => {
+    if (Array.isArray(value)) return value;
+    if (typeof value === 'string') {
+      const trimmed = value.trim();
+      if (!trimmed) return [];
+      try {
+        const parsed = JSON.parse(trimmed);
+        if (Array.isArray(parsed)) return parsed;
+      } catch (_) {}
+      return trimmed.split('|').map((msg) => msg.trim()).filter(Boolean);
+    }
+    return [];
+  };
+  const initialMessages = parseInitialMessages(botConfig.initialMessages || []);
 
   if (window.location.hostname.includes('localhost')) {
     console.log("💬 chat-widget config loaded:", { siteID, theme, position, instructions });
@@ -53,6 +116,7 @@
 
   // 3. Create floating button
   const button = document.createElement('div');
+  button.id = 'cw-button';
   button.innerHTML = `
     <div style="display:flex;flex-direction:column;align-items:center;gap:4px;">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="${accentColor}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -66,15 +130,15 @@
     position: fixed;
     width: 56px;
     height: 56px;
-    background: #fff;
-    border: 2px solid ${accentColor};
-    border-radius: 18px;
+    background: #f5f5f5;
+    border: 2px dashed ${accentColor};
+    border-radius: 100%;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     z-index: 9999;
-    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.12);
     transition: transform 0.2s, box-shadow 0.2s;
   `;
   button.onmouseenter = () => {
@@ -93,16 +157,17 @@
     ${isRight ? 'right: 0' : 'left: 0'};
     transform: translateX(${isRight ? '-20%' : '20%'});
     background: ${accentColor};
-    color: white;
+    color: #f5f5f5;
     padding: 0.35rem 0.65rem;
     border-radius: 999px;
     font-size: 0.75rem;
     letter-spacing: 0.1px;
     white-space: nowrap;
     opacity: 0;
+    border: 1px dashed #999;
     pointer-events: none;
     transition: opacity 0.2s;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
   `;
   button.appendChild(tooltip);
 
@@ -121,6 +186,7 @@
   button.appendChild(statusDot);
 
   const pulseStyle = document.createElement('style');
+  pulseStyle.id = 'cw-pulse-style';
   pulseStyle.textContent = `
     @keyframes pulse {
       0% { transform: scale(0.8); opacity: 0.8; }
@@ -146,30 +212,35 @@
   `;
 
   const wrapper = document.createElement('div');
+  wrapper.id = 'cw-wrapper';
   wrapper.style = `
     position: fixed;
     ${wrapperOffset}
     width: 360px;
     height: 480px;
     display: none;
+    flex-direction: column;
     z-index: 9998;
     border-radius: 14px;
     overflow: hidden;
-    box-shadow: 0 12px 30px rgba(0,0,0,0.35);
+    background: #f3f3f3;
+    border: 2px dashed #5a5a5a;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.28);
     backdrop-filter: blur(12px);
   `;
 
   const header = document.createElement('div');
   header.style = `
     padding: 0.85rem 1rem;
-    background: linear-gradient(120deg, ${accentColor}, #ffffff);
-    color: #fff;
+    background: #2d2d2d;
+    color: #f4f4f4;
     font-weight: 600;
     display: flex;
     align-items: center;
     justify-content: space-between;
     gap: 1rem;
     font-size: 0.95rem;
+    border-bottom: 1px dashed #888;
   `;
   const title = document.createElement('span');
   title.textContent = widgetTitle;
@@ -182,6 +253,7 @@
     font-size: 1.3rem;
     line-height: 1;
     cursor: pointer;
+    width: auto;
   `;
   header.appendChild(title);
   header.appendChild(closeButton);
@@ -190,33 +262,29 @@
   // 5. Create iframe
   const iframe = document.createElement('iframe');
 
-  // Find the <script> that loaded this file
-  const thisScript = document.currentScript
-    || Array.from(document.getElementsByTagName('script'))
-      .find(s => s.src && s.src.match(/\/embed(?:\.min)?\.js(\?.*)?$/));
-
+  // Build base URL from the script that loaded this file
   if (!thisScript) {
     console.warn('Could not auto-detect embed.js script tag; falling back to default origin.');
   }
 
-  // Build base URL from its src
   const scriptUrl = thisScript
     ? new URL(thisScript.src, window.location.href)
     : new URL('https://chat-widget.uft1.com/embed.js');
 
-  // Remove the filename (embed.js) to get the folder
   const baseUrl = scriptUrl.origin + scriptUrl.pathname.replace(/\/[^\/]+$/, '');
 
   // Point iframe at the matching widget.html in that same folder
   iframe.src = `${baseUrl}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
 
   iframe.style = `
+    flex: 1;
+    min-height: 0;
     width: 100%;
-    height: 100%;
     border: none;
+    display: block;
   `;
   const iframeContainer = document.createElement('div');
-  iframeContainer.style = 'flex:1; min-height:0; background:#fff;';
+  iframeContainer.style = 'display:flex; flex:1; min-height:0; background:#fff;';
   iframeContainer.appendChild(iframe);
   wrapper.appendChild(iframeContainer);
   document.body.appendChild(wrapper);
@@ -225,7 +293,7 @@
   let open = false;
   const setVisibility = (visible) => {
     open = visible;
-    wrapper.style.display = visible ? 'block' : 'none';
+    wrapper.style.display = visible ? 'flex' : 'none';
     statusDot.style.animationPlayState = visible ? 'paused' : 'running';
   };
 
@@ -255,7 +323,7 @@
   iframe.onload = () => {
     iframe.contentWindow?.postMessage({
       type: 'chat-config',
-      payload: { siteID, theme, instructions }
+      payload: { siteID, theme, instructions, initialMessages }
     }, '*');
   };
 })();

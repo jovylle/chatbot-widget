@@ -152,107 +152,69 @@
       document.getElementById('embed-code').innerText = snippet;
     }
 
-    function initWidget () {
-      // 1) clean up old widget if present
-      document.getElementById('cw-button')?.remove();
-      document.getElementById('cw-wrapper')?.remove();
+    const fallbackScript = document.getElementById('chat-widget-config-001');
+    let liveEmbedScript;
 
-      // 2) load fallback JSON config
-      let cfg = { chatbot: {} };
+    function getFallbackBotConfig () {
+      const defaultConfig = { chatbot: {} };
+      if (!fallbackScript) return defaultConfig.chatbot;
       try {
-        cfg = JSON.parse(document.getElementById('chat-widget-config-001').textContent);
-      } catch {
+        const parsed = JSON.parse(fallbackScript.textContent || '');
+        return (parsed && parsed.chatbot) || defaultConfig.chatbot;
+      } catch (error) {
         console.warn('Invalid fallback config JSON.');
+        return defaultConfig.chatbot;
       }
-      const bot = cfg.chatbot || {};
+    }
 
-      // 3) apply fragment overrides
+    function updateFallbackConfig (instructions, position) {
+      if (!fallbackScript) return;
+      const payload = {
+        chatbot: {
+          siteID: 'demo',
+          theme: 'light',
+          position,
+          instructions
+        }
+      };
+      fallbackScript.textContent = JSON.stringify(payload, null, 2);
+    }
+
+    function loadLiveWidget () {
+      liveEmbedScript?.remove();
+      liveEmbedScript = document.createElement('script');
+      liveEmbedScript.src = '/embed.js';
+      liveEmbedScript.async = false;
+      document.body.appendChild(liveEmbedScript);
+    }
+
+    function renderEmbedSnippet () {
+      const bot = getFallbackBotConfig();
       const frag = parseFragment();
       const instructions = frag.instructions || bot.instructions || "You're a helpful assistant.";
       const position = frag.position || bot.position || 'bottom-right';
-
-      // 4) build embed-code snippet
       updateEmbedCode(instructions, position);
-
-      // 5) determine button offsets
-      const isBottom = position.includes('bottom');
-      const isRight = position.includes('right');
-      const btnOffset = `${isBottom ? 'bottom' : 'top'}:24px;${isRight ? 'right' : 'left'}:24px;`;
-
-      // 6) create button
-      const button = document.createElement('div');
-      button.id = 'cw-button';
-      button.innerHTML = `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
-  </svg>`;
-      button.style = `
-  position: fixed; ${btnOffset}
-  width:48px; height:48px;
-  background:white; border:1px solid #ccc;
-  border-radius:50%; display:flex;
-  align-items:center;justify-content:center;
-  cursor:pointer; z-index:9999;
-  box-shadow:0 2px 6px rgba(0,0,0,0.1);
-  `;
-      button.onmouseenter = () => button.style.boxShadow = '0 0 6px rgba(0,0,0,0.15)';
-      button.onmouseleave = () => button.style.boxShadow = '0 2px 6px rgba(0,0,0,0.1)';
-      document.body.appendChild(button);
-
-      // 7) create wrapper + iframe
-      const wrap = document.createElement('div');
-      wrap.id = 'cw-wrapper';
-      wrap.style = `
-  position:fixed; ${isBottom ? 'bottom' : 'top'}:84px;
-  ${isRight ? 'right' : 'left'}:24px;
-  width:360px; height:480px;
-  display:none; z-index:9998;
-  border-radius:12px; overflow:hidden;
-  box-shadow:0 4px 20px rgba(0,0,0,0.3);
-  `;
-      const iframe = document.createElement('iframe');
-      iframe.src = `/widget.html`
-        + `?siteID=${encodeURIComponent(bot.siteID || 'demo')}`
-        + `&theme=${bot.theme || 'light'}`;
-      
-      iframe.style = 'width:100%;height:100%;border:none;';
-      wrap.appendChild(iframe);
-      document.body.appendChild(wrap);
-
-      // 8) toggle visibility
-      let open = false;
-      button.addEventListener('click', () => {
-        open = !open;
-        wrap.style.display = open ? 'block' : 'none';
-      });
-
-      // 9) postMessage on load
-      iframe.onload = () => {
-        iframe.contentWindow?.postMessage({
-          type: 'chat-config',
-          payload: { siteID: bot.siteID || 'demo', theme: bot.theme || 'light', instructions }
-        }, '*');
-      };
+      updateFallbackConfig(instructions, position);
+      loadLiveWidget();
     }
 
-    // init on load and on fragment change
-    window.addEventListener('DOMContentLoaded', initWidget);
-    window.addEventListener('hashchange', initWidget);
-
-  console.log('registering event demo chatbot...');  
-    // wire up demo form to set fragment and re-init
-    document.getElementById('update-demo').addEventListener('click', () => {
-        console.log('Updating demo chatbot...');
+    window.addEventListener('DOMContentLoaded', () => {
+      renderEmbedSnippet();
+      document.getElementById('update-demo').addEventListener('click', () => {
         const instr = encodeURIComponent(
           document.getElementById('demo-instructions').value
         );
         const pos = document.getElementById('demo-position').value;
-        // set the fragment and re-init
         location.hash = `instructions=${instr}&position=${pos}`;
+      });
     });
+
+    window.addEventListener('hashchange', renderEmbedSnippet);
   </script>
 
   <h3>Your Embed Code</h3>
   <pre><code id="embed-code"></code></pre>
+
 
 </body>
 
