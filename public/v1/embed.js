@@ -269,7 +269,7 @@
 
   const scriptUrl = thisScript
     ? new URL(thisScript.src, window.location.href)
-    : new URL('https://chat-widget.uft1.com/embed.js');
+    : new URL('https://chat-widget.uft1.com/v1/embed.js');
 
   const baseUrl = scriptUrl.origin + scriptUrl.pathname.replace(/\/[^\/]+$/, '');
 

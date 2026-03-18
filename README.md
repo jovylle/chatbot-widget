@@ -5,6 +5,10 @@ Instantly embed a GPT-powered chatbot into any site.
 
 ## 🚀 How to Use
 
+### Local dev
+
+`netlify dev` now starts the static/assets server on port `52873` with the functions sandbox bound to `3999`. No extra flags are required—just open http://localhost:52873 when you want to preview locally.
+
 Basic config:
 
 ```html
@@ -16,7 +20,7 @@ Basic config:
   }
 }
 </script>
-<script src="https://chat-widget.uft1.com/embed.js"></script>
+<script src="https://chat-widget.uft1.com/v1/embed.js"></script>
 ````
 
 Optional config with `siteID` and `position`:
@@ -29,7 +33,7 @@ Optional config with `siteID` and `position`:
   }
 }
 </script>
-<script src="https://chat-widget.uft1.com/embed.js"></script>
+<script src="https://chat-widget.uft1.com/v1/embed.js"></script>
 
 ```
 
@@ -53,14 +57,14 @@ The advanced widget points to `widget-advanced.html`, which exposes the `Chat`, 
 
 ## ✨ Extended widget v2
 
-Need more than chat? The v2 bundle introduces a brand new `embed-extended-v2.js` that targets `widget-advanced-v2.html`. It keeps the chat core but adds:
+Need more than chat? The v2 bundle introduces its own `/v2/embed.js` that targets `widget.html`. It keeps the chat core but adds:
 
 - a header with a tagline and instructions
 - multi-tab layout (`Chat`, `Quick links`, `Host info`)
 - curated quick links and host stats that you pass via the config
 - an accent color, variant label, and full-page toggle for partners
 
-Drop this snippet to run the new experience (the same one powering `public/extended-v2.html`):
+Drop this snippet to run the new experience (the same one powering `public/v2/index.html`):
 
 ```html
 <script type="application/json" id="chat-config-advanced-v2">
@@ -90,10 +94,10 @@ Drop this snippet to run the new experience (the same one powering `public/exten
   }
 }
 </script>
-<script src="https://chat-widget.uft1.com/embed-extended-v2.js"></script>
+<script src="https://chat-widget.uft1.com/v2/embed.js"></script>
 ```
 
-Visit `public/extended-v2.html` to preview the experience, see the snippet rendered automatically, and read quick tips for customizing the links and host info for each site.
+Visit `public/v2/index.html` to preview the experience, see the snippet rendered automatically, and read quick tips for customizing the links and host info for each site.
 
 ## 🏠 Host-style examples
 
@@ -103,7 +107,7 @@ Want to see how actual landing pages might embed the new experience? Check `publ
 - `agency.html`: a creative agency desk that surfaces campaign guides and media kits.
 - `marketplace.html`: a premium marketplace flow that highlights makers, drops, and support links.
 
-Each page includes its own `chat-config-advanced-v2` block and loads `embed-extended-v2.js` via a relative path so you can inspect how the quick links, info cards, and accent color change per host.
+Each page includes its own `chat-config-advanced-v2` block and loads `embed.js` from the `/v2/` folder via a relative path so you can inspect how the quick links, info cards, and accent color change per host.
 
 ## 🧪 Live Demo
 

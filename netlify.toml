@@ -4,3 +4,7 @@
 
 [functions]
   node_bundler = "esbuild"
+
+[dev]
+  port = 52873
+  functionsPort = 3999
