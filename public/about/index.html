@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About chat-widget</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 2rem;
+      max-width: 760px;
+      margin-inline: auto;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: #05060d;
+      color: #e2e8f0;
+      line-height: 1.5;
+    }
+    h1, h2 {
+      color: #f8fafc;
+      margin: 0 0 0.7rem;
+    }
+    p {
+      margin: 0 0 1rem;
+      color: #cbd5e1;
+    }
+    code, pre {
+      background: #111827;
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: #e2e8f0;
+    }
+    a {
+      color: #93c5fd;
+    }
+    .card {
+      margin-top: 1rem;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 1rem;
+      background: rgba(15, 23, 42, 0.65);
+    }
+  </style>
+</head>
+<body>
+  <h1>About chat-widget</h1>
+  <p>`chat-widget` is a lightweight embeddable chatbot for websites.</p>
+
+  <div class="card">
+    <h2>What it is for</h2>
+    <p>It gives site visitors a floating chat assistant that can be configured with your own instructions, theme, links, and contextual info.</p>
+  </div>
+
+  <div class="card">
+    <h2>Pages</h2>
+    <ul>
+      <li><a href="/">Home</a> - minimal setup and live demo.</li>
+      <li><a href="/advanced/">Advanced setup</a> - full configuration reference.</li>
+      <li><a href="/widget.html">Widget UI</a> - runtime widget interface.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Routes</h2>
+    <ul>
+      <li>Canonical: <code>/embed.js</code>, <code>/widget.html</code>, <code>/</code>.</li>
+      <li>Legacy compatibility: <code>/v1/*</code> and <code>/v2/*</code> forward to canonical paths.</li>
+    </ul>
+  </div>
+
+  <p><a href="/">Back to home</a> · <a href="/advanced/">Go to advanced setup</a></p>
+</body>
+</html>

@@ -3,206 +3,174 @@
 
 <head>
   <meta charset="UTF-8" />
+  <title>chat-widget minimal setup</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>chat-widget selector</title>
   <style>
     :root {
-      color-scheme: light dark;
-      --page-bg: radial-gradient(circle at top, #fdf7f2 0%, #f7f7ff 60%, #f2f8ff 100%);
-      --card-bg: rgba(255, 255, 255, 0.9);
-      --card-border: rgba(15, 23, 42, 0.12);
-      --accent: #3f51b5;
-      --accent-strong: #5565f7;
-      --muted: #3b4150;
+      --bg: #05060d;
+      --text: #f9fafb;
+      --heading: #f3f4ff;
+      --body-muted: #cbd5f5;
+      --code-bg: #11152a;
+      --code-text: #e0e7ff;
+      --card-bg: #0f1223;
+      --card-border: rgba(255, 255, 255, 0.08);
+      --field-text: #d6ddf8;
+      --select-border: rgba(255, 255, 255, 0.2);
+      --link: #3b82f6;
     }
 
-    * {
-      box-sizing: border-box;
+    html.theme-light {
+      --bg: #f7f8fc;
+      --text: #1f2937;
+      --heading: #111827;
+      --body-muted: #334155;
+      --code-bg: #e9eefc;
+      --code-text: #1e293b;
+      --card-bg: #ffffff;
+      --card-border: rgba(15, 23, 42, 0.12);
+      --field-text: #334155;
+      --select-border: rgba(15, 23, 42, 0.18);
+      --link: #2563eb;
     }
 
     body {
+      font-family: system-ui, sans-serif;
       margin: 0;
-      min-height: 100vh;
-      font-family: "Inter", "Segoe UI", system-ui, sans-serif;
-      background: var(--page-bg);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem;
-      color: var(--muted);
+      padding: 2.25rem 1.25rem 3rem;
+      max-width: 760px;
+      margin-inline: auto;
+      background: var(--bg);
+      color: var(--text);
     }
 
-    main {
-      width: min(1100px, 100%);
-      background: rgba(255, 255, 255, 0.95);
-      border-radius: 32px;
-      padding: 3rem;
-      box-shadow: 0 25px 60px rgba(15, 23, 42, 0.12);
-      border: 1px solid rgba(255, 255, 255, 0.6);
+    h1 {
+      font-size: 2.2rem;
+      color: var(--heading);
+      margin-bottom: 0.4rem;
     }
 
-    header {
-      max-width: 780px;
-      margin-bottom: 2rem;
-    }
-
-    header h1 {
-      margin: 0 0 0.5rem;
-      font-size: clamp(2rem, 4vw, 2.75rem);
-      color: #0f172a;
-    }
-
-    header p {
-      margin: 0;
-      font-size: 1.05rem;
-      color: var(--muted);
-    }
-
-    .selector-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .card {
-      background: var(--card-bg);
-      border-radius: 22px;
-      padding: 1.75rem;
-      border: 1px solid var(--card-border);
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      min-height: 260px;
-    }
-
-    .card h2 {
-      margin: 0;
-      color: #111827;
-      font-size: 1.35rem;
-    }
-
-    .card p {
-      margin: 0;
+    p,
+    li {
+      margin: 0 0 1rem;
+      color: var(--body-muted);
       line-height: 1.5;
     }
 
-    .card .actions {
-      margin-top: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 0.65rem;
-    }
-
-    .button {
-      text-decoration: none;
-      padding: 0.85rem 1.2rem;
-      border-radius: 999px;
-      border: 1px solid transparent;
-      font-weight: 600;
-      text-align: center;
+    code,
+    pre {
+      background: var(--code-bg);
+      padding: 0.85rem 1rem;
+      border-radius: 6px;
       font-size: 0.95rem;
-      transition: all 0.2s ease;
+      line-height: 1.8;
+      overflow-x: auto;
+      color: var(--code-text);
     }
 
-    .button.primary {
-      background: var(--accent);
-      color: #fff;
-      border-color: var(--accent);
-      box-shadow: 0 10px 20px rgba(63, 81, 181, 0.25);
+    h2 {
+      margin-top: 1.8rem;
+      margin-bottom: 0.65rem;
+      color: var(--heading);
     }
 
-    .button.primary:hover {
-      background: var(--accent-strong);
-      border-color: var(--accent-strong);
+    .card {
+      margin-top: 1.1rem;
+      padding: 1rem;
+      border-radius: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
     }
 
-    .button.secondary {
-      background: transparent;
-      border-color: rgba(15, 23, 42, 0.12);
-      color: #0f172a;
+    label,
+    select {
+      font-size: 0.92rem;
+      color: var(--field-text);
     }
 
-    .button.secondary:hover {
-      border-color: rgba(15, 23, 42, 0.3);
+    select {
+      margin-left: 0.5rem;
+      padding: 0.35rem 0.5rem;
+      border-radius: 8px;
+      border: 1px solid var(--select-border);
+      background: var(--code-bg);
+      color: var(--field-text);
     }
 
-    .mini-links {
-      display: flex;
-      flex-direction: column;
-      gap: 0.35rem;
-    }
-
-    .mini-links a {
-      font-size: 0.9rem;
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .mini-links a:hover {
-      text-decoration: underline;
-    }
-
-    footer {
-      margin-top: 2.5rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-    }
-
-    @media (max-width: 600px) {
-      body {
-        padding: 1rem;
-      }
-
-      main {
-        padding: 2rem;
-        border-radius: 20px;
-      }
-
-      .card {
-        min-height: auto;
-      }
+    a {
+      color: var(--link);
     }
   </style>
 </head>
 
 <body>
-  <main>
-    <header>
-      <h1>Choose your chat-widget</h1>
-      <p>Pick the experience that matches your embed strategy. The links below open the standalone HTML pages for each widget version so you can test them directly.</p>
-    </header>
+  <h1>chat-widget</h1>
+  <p>Minimal install: add one JSON config script with your assistant context, then load <code>/embed.js</code>.</p>
 
-    <section class="selector-grid">
-      <article class="card">
-        <h2>Version 1 — Lightweight chat</h2>
-        <p>The original `embed.js` experience: a single chat window, optional presets, and configurable positions/themes. Perfect when you just need fast GPT replies without extra UI.</p>
-        <div class="actions">
-          <a class="button primary" href="/v1">Open v1 demo & instructions</a>
-          <a class="button secondary" href="/v1/widget.html">View the v1 widget UI</a>
-        </div>
-      </article>
+  <h2>Minimal setup</h2>
+  <pre><code>&lt;script type="application/json" id="chat-widget-config"&gt;
+{
+  "chatbot": {
+    "instructions": "You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Be friendly, help with menu questions, suggest best sellers, and guide customers to order."
+  }
+}
+&lt;/script&gt;
+&lt;script src="/embed.js"&gt;&lt;/script&gt;</code></pre>
 
-      <article class="card">
-        <h2>Advanced + extended experiences</h2>
-        <p>These variants layer tabs, notifications, quick links, and host info on top of the core chat. Use the embed-extended bundle or the v2 `embed.js` for richer widget embeds.</p>
-        <div class="actions">
-          <a class="button primary" href="/v2">Explore the v2 landing/demo</a>
-          <a class="button secondary" href="/widget-advanced.html">Classic tabs widget (embed-extended)</a>
-        </div>
-        <div class="mini-links">
-          <a href="/v2/widget.html">Open the v2 widget UI directly</a>
-          <a href="https://github.com/jovylle/chatbot-widget" target="_blank">Read the README</a>
-        </div>
-      </article>
-    </section>
+  <div class="card">
+    <p>That is enough to launch. Everything else is optional.</p>
+    <p>Live demo is active on this page.</p>
+    <p>
+      <label for="theme-switch">Demo theme</label>
+      <select id="theme-switch">
+        <option value="">auto-detect</option>
+        <option value="light">light</option>
+        <option value="dark">dark</option>
+      </select>
+    </p>
+    <p><a href="/advanced/">Need advanced setup and full configuration options?</a></p>
+  </div>
 
-    <footer>
-      <span>Need host-style examples? Browse `public/examples/`.</span>
-      <span>Updated 2026</span>
-    </footer>
-  </main>
+  <script type="application/json" id="chat-widget-config">
+{
+  "chatbot": {
+    "instructions": "You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Be friendly, help with menu questions, suggest best sellers, and guide customers to order."
+  }
+}
+  </script>
+  <script>
+    const themeSwitch = document.getElementById('theme-switch');
+    const configNode = document.getElementById('chat-widget-config');
+    const params = new URLSearchParams(window.location.search);
+    const theme = params.get('theme') || '';
+
+    if (theme === 'light') {
+      document.documentElement.classList.add('theme-light');
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else if (theme === 'dark') {
+      document.documentElement.classList.remove('theme-light');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('theme-light');
+      document.documentElement.removeAttribute('data-theme');
+    }
+
+    const config = JSON.parse(configNode.textContent);
+    delete config.chatbot.theme;
+    configNode.textContent = JSON.stringify(config, null, 2);
+    themeSwitch.value = theme;
+
+    themeSwitch.addEventListener('change', () => {
+      const next = themeSwitch.value;
+      const nextParams = new URLSearchParams(window.location.search);
+      if (next) nextParams.set('theme', next);
+      else nextParams.delete('theme');
+      const nextQuery = nextParams.toString();
+      window.location.search = nextQuery ? `?${nextQuery}` : '';
+    });
+  </script>
+  <script src="/embed.js"></script>
+
 </body>
 
 </html>

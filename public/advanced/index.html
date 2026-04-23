@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>chat-widget advanced setup</title>
+  <style>
+    :root {
+      --bg: #05060d;
+      --text: #e2e8f0;
+      --heading: #f8fafc;
+      --muted: #cbd5e1;
+      --card-bg: rgba(15, 23, 42, 0.65);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --code-bg: #111827;
+      --code-text: #e2e8f0;
+      --field-bg: #0f172a;
+      --field-border: rgba(255, 255, 255, 0.2);
+      --link: #93c5fd;
+    }
+
+    html.theme-light {
+      --bg: #f8fafc;
+      --text: #1f2937;
+      --heading: #111827;
+      --muted: #334155;
+      --card-bg: #ffffff;
+      --card-border: rgba(15, 23, 42, 0.12);
+      --code-bg: #e9eefc;
+      --code-text: #1e293b;
+      --field-bg: #ffffff;
+      --field-border: rgba(15, 23, 42, 0.18);
+      --link: #2563eb;
+    }
+
+    body {
+      margin: 0;
+      padding: 2rem;
+      max-width: 760px;
+      margin-inline: auto;
+      font-family: system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+    }
+    h1, h2 {
+      color: var(--heading);
+      margin: 0 0 0.7rem;
+    }
+    p {
+      margin: 0 0 1rem;
+      color: var(--muted);
+    }
+    code, pre {
+      background: var(--code-bg);
+      border-radius: 8px;
+      padding: 0.8rem 1rem;
+      color: var(--code-text);
+    }
+    a {
+      color: var(--link);
+    }
+    .card {
+      margin-top: 1rem;
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      padding: 1rem;
+      background: var(--card-bg);
+    }
+    label {
+      display: block;
+      margin-top: 0.7rem;
+      font-size: 0.92rem;
+      color: var(--muted);
+    }
+    textarea,
+    input,
+    select,
+    button {
+      width: 100%;
+      margin-top: 0.3rem;
+      padding: 0.6rem 0.7rem;
+      border-radius: 8px;
+      border: 1px solid var(--field-border);
+      background: var(--field-bg);
+      color: var(--text);
+      font-size: 0.92rem;
+      box-sizing: border-box;
+    }
+    button {
+      cursor: pointer;
+      font-weight: 600;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.8rem;
+    }
+    .theme-row {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+    .theme-row label {
+      margin: 0;
+      white-space: nowrap;
+    }
+    .theme-row select {
+      margin-top: 0;
+    }
+    @media (max-width: 740px) {
+      .grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="theme-row">
+    <label for="page-theme-switch">Page theme</label>
+    <select id="page-theme-switch">
+      <option value="">auto-detect</option>
+      <option value="light">light</option>
+      <option value="dark">dark</option>
+    </select>
+  </div>
+
+  <h1>Advanced setup</h1>
+  <p>Use this page when you want more than the minimal install on the home page.</p>
+
+  <div class="card">
+    <h2>Interactive config playground</h2>
+    <p>Change fields below and click <strong>Apply config</strong> to update the running widget on this page.</p>
+
+    <div class="grid">
+      <div>
+        <label for="cfg-site-id">siteID (optional)</label>
+        <input id="cfg-site-id" value="tokyo-zen-pizza" />
+      </div>
+      <div>
+        <label for="cfg-variant">variant (optional)</label>
+        <input id="cfg-variant" value="shop" />
+      </div>
+      <div>
+        <label for="cfg-theme">widget theme</label>
+        <select id="cfg-theme">
+          <option value="">auto-detect</option>
+          <option value="light">light</option>
+          <option value="dark" selected>dark</option>
+        </select>
+      </div>
+      <div>
+        <label for="cfg-position">position</label>
+        <select id="cfg-position">
+          <option value="bottom-right" selected>bottom-right</option>
+          <option value="bottom-left">bottom-left</option>
+          <option value="top-right">top-right</option>
+          <option value="top-left">top-left</option>
+        </select>
+      </div>
+      <div>
+        <label for="cfg-accent">accentColor</label>
+        <input id="cfg-accent" value="#7c5dff" />
+      </div>
+      <div>
+        <label for="cfg-tagline">tagline (optional)</label>
+        <input id="cfg-tagline" value="Fresh Asian-inspired pizza, ready to order." />
+      </div>
+    </div>
+
+    <label for="cfg-instructions">instructions</label>
+    <textarea id="cfg-instructions" rows="4">You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Help with menu, prices, delivery zones, and ordering.</textarea>
+
+    <label for="cfg-quicklinks">quickLinks JSON (optional)</label>
+    <textarea id="cfg-quicklinks" rows="5">[
+  { "label": "Menu", "url": "https://example.com/menu", "description": "View all pizza flavors and sides." },
+  { "label": "Promos", "url": "https://example.com/promos", "description": "See latest bundles and discounts." }
+]</textarea>
+
+    <label for="cfg-info">info JSON (optional)</label>
+    <textarea id="cfg-info" rows="6">{
+  "headline": "Zen Slice Makati",
+  "summary": "Tokyo-inspired toppings, local ingredients, and fast delivery.",
+  "stats": [
+    { "label": "Branches", "value": "3" },
+    { "label": "Open today", "value": "10AM-11PM" }
+  ]
+}</textarea>
+
+    <button id="apply-config" type="button">Apply config</button>
+  </div>
+
+  <div class="card">
+    <h2>Generated snippet</h2>
+    <pre><code id="generated-snippet"></code></pre>
+  </div>
+
+  <div class="card">
+    <h2>Config fields</h2>
+    <ul>
+      <li><code>instructions</code> - assistant behavior/context for every reply.</li>
+      <li><code>theme</code> - <code>light</code> or <code>dark</code>; omit for host auto-detect.</li>
+      <li><code>position</code> - <code>bottom-right</code>, <code>bottom-left</code>, <code>top-right</code>, <code>top-left</code>.</li>
+      <li><code>accentColor</code> - main widget accent hex color.</li>
+      <li><code>tagline</code>, <code>quickLinks</code>, and <code>info</code> - optional content sections.</li>
+      <li><code>siteID</code> and <code>variant</code> - optional identifiers/labels.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>Routes</h2>
+    <ul>
+      <li>Canonical: <code>/embed.js</code>, <code>/widget.html</code>, <code>/</code>.</li>
+      <li>Legacy compatibility: <code>/v1/*</code> and <code>/v2/*</code> forward to canonical paths.</li>
+    </ul>
+  </div>
+
+  <script type="application/json" id="chat-widget-config">
+{
+  "chatbot": {
+    "siteID": "tokyo-zen-pizza",
+    "theme": "dark",
+    "position": "bottom-right",
+    "accentColor": "#7c5dff",
+    "variant": "shop",
+    "tagline": "Fresh Asian-inspired pizza, ready to order.",
+    "instructions": "You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Help with menu, prices, delivery zones, and ordering.",
+    "quickLinks": [
+      { "label": "Menu", "url": "https://example.com/menu", "description": "View all pizza flavors and sides." },
+      { "label": "Promos", "url": "https://example.com/promos", "description": "See latest bundles and discounts." }
+    ],
+    "info": {
+      "headline": "Zen Slice Makati",
+      "summary": "Tokyo-inspired toppings, local ingredients, and fast delivery.",
+      "stats": [
+        { "label": "Branches", "value": "3" },
+        { "label": "Open today", "value": "10AM-11PM" }
+      ]
+    }
+  }
+}
+  </script>
+  <script>
+    const pageThemeSwitch = document.getElementById('page-theme-switch');
+    const params = new URLSearchParams(window.location.search);
+    const pageTheme = params.get('theme') || '';
+
+    if (pageTheme === 'light') {
+      document.documentElement.classList.add('theme-light');
+      document.documentElement.setAttribute('data-theme', 'light');
+    } else if (pageTheme === 'dark') {
+      document.documentElement.classList.remove('theme-light');
+      document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+      document.documentElement.classList.remove('theme-light');
+      document.documentElement.removeAttribute('data-theme');
+    }
+    pageThemeSwitch.value = pageTheme;
+    pageThemeSwitch.addEventListener('change', () => {
+      const next = pageThemeSwitch.value;
+      const nextParams = new URLSearchParams(window.location.search);
+      if (next) nextParams.set('theme', next);
+      else nextParams.delete('theme');
+      const nextQuery = nextParams.toString();
+      window.location.search = nextQuery ? `?${nextQuery}` : '';
+    });
+
+    const configNode = document.getElementById('chat-widget-config');
+    const snippetEl = document.getElementById('generated-snippet');
+    const applyBtn = document.getElementById('apply-config');
+    const fields = {
+      siteID: document.getElementById('cfg-site-id'),
+      variant: document.getElementById('cfg-variant'),
+      theme: document.getElementById('cfg-theme'),
+      position: document.getElementById('cfg-position'),
+      accentColor: document.getElementById('cfg-accent'),
+      tagline: document.getElementById('cfg-tagline'),
+      instructions: document.getElementById('cfg-instructions'),
+      quickLinks: document.getElementById('cfg-quicklinks'),
+      info: document.getElementById('cfg-info')
+    };
+    let liveEmbedScript;
+
+    const buildConfig = () => {
+      const chatbot = {
+        instructions: fields.instructions.value.trim() || "You're a helpful assistant.",
+        position: fields.position.value || 'bottom-right',
+        accentColor: fields.accentColor.value.trim() || '#7c5dff'
+      };
+      if (fields.siteID.value.trim()) chatbot.siteID = fields.siteID.value.trim();
+      if (fields.variant.value.trim()) chatbot.variant = fields.variant.value.trim();
+      if (fields.tagline.value.trim()) chatbot.tagline = fields.tagline.value.trim();
+      if (fields.theme.value) chatbot.theme = fields.theme.value;
+
+      try {
+        const quickLinks = JSON.parse(fields.quickLinks.value.trim() || '[]');
+        if (Array.isArray(quickLinks) && quickLinks.length) chatbot.quickLinks = quickLinks;
+      } catch {}
+
+      try {
+        const info = JSON.parse(fields.info.value.trim() || 'null');
+        if (info && typeof info === 'object') chatbot.info = info;
+      } catch {}
+
+      return { chatbot };
+    };
+
+    const renderSnippet = (config) => {
+      snippetEl.textContent = `<script type="application/json" id="chat-widget-config">\n${JSON.stringify(config, null, 2)}\n<\/script>\n<script src="/embed.js"><\/script>`;
+    };
+
+    const loadWidget = () => {
+      liveEmbedScript?.remove();
+      liveEmbedScript = document.createElement('script');
+      liveEmbedScript.src = '/embed.js';
+      liveEmbedScript.async = false;
+      document.body.appendChild(liveEmbedScript);
+    };
+
+    const applyConfig = () => {
+      const config = buildConfig();
+      configNode.textContent = JSON.stringify(config, null, 2);
+      renderSnippet(config);
+      loadWidget();
+    };
+
+    applyBtn.addEventListener('click', applyConfig);
+    applyConfig();
+  </script>
+  <script src="/embed.js"></script>
+
+  <p><a href="/">Back to home</a></p>
+</body>
+</html>
