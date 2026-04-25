@@ -18,7 +18,10 @@
  * - position (string): "bottom-right" (default), "bottom-left", "top-right", "top-left".
  * - accentColor (string): Hex color for borders, pills, and the floating button accent.
  * - variant (string): Any label that describes the widget flavor (e.g. "pro", "agency").
+ * - title (string): Label shown on the chat tab and page title inside the widget.
  * - tagline (string): Header line that sits above the instructions text.
+ * - starterMessage (string): Short prompt shown above the starter suggestions.
+ * - starterSuggestions (array): Up to three quick prompts shown before the first message.
  * - instructions (string): Core system prompt for the GPT assistant.
  * - quickLinks (array): Each entry { label, url, description } to surface CTAs inside the widget.
  * - info (object): { headline, summary, stats: [{ label, value }] } to show context cards underneath the links.
@@ -41,6 +44,10 @@
 
   const DEFAULT_QUICK_LINKS = [];
   const DEFAULT_INFO = null;
+  const DEFAULT_STARTER_SUGGESTIONS = [
+    'What can you help with?',
+    'How to lose weight?',
+  ];
 
   const DEFAULT_CONFIG = {
     chatbot: {
@@ -50,7 +57,10 @@
       position: "bottom-right",
       accentColor: "#3f51b5",
       variant: "v2",
+      title: "Chat Widget",
       tagline: "Details, quick links, and the chatbot in one panel.",
+      starterMessage: 'Choose one to get started.',
+      starterSuggestions: DEFAULT_STARTER_SUGGESTIONS,
       quickLinks: DEFAULT_QUICK_LINKS,
       info: DEFAULT_INFO
     }
@@ -117,7 +127,14 @@
   const quickLinks = Array.isArray(botConfig.quickLinks) ? botConfig.quickLinks : DEFAULT_QUICK_LINKS;
   const info = typeof botConfig.info === 'object' && botConfig.info !== null ? botConfig.info : DEFAULT_INFO;
   const variant = botConfig.variant || DEFAULT_CONFIG.chatbot.variant;
+  const title = typeof botConfig.title === 'string' ? botConfig.title : DEFAULT_CONFIG.chatbot.title;
   const tagline = botConfig.tagline || DEFAULT_CONFIG.chatbot.tagline;
+  const starterMessage = typeof botConfig.starterMessage === 'string'
+    ? botConfig.starterMessage
+    : DEFAULT_CONFIG.chatbot.starterMessage;
+  const starterSuggestions = Array.isArray(botConfig.starterSuggestions)
+    ? botConfig.starterSuggestions.slice(0, 3)
+    : DEFAULT_CONFIG.chatbot.starterSuggestions;
 
   const isBottom = position.includes('bottom');
   const isRight = position.includes('right');
@@ -254,7 +271,10 @@
         quickLinks,
         info,
         variant,
-        tagline
+        tagline,
+        title,
+        starterMessage,
+        starterSuggestions
       }
     }, '*');
   };
@@ -279,6 +299,6 @@
   window.addEventListener('message', handleExpandMessage);
 
   if (window.location.hostname.includes('localhost')) {
-    console.log('💬 extended chat v2 config loaded:', { siteID, theme, position, instructions });
+    console.log('💬 extended chat v2 config loaded:', { siteID, theme, position, instructions, title });
   }
 })();

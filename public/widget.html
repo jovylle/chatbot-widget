@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Extended Chatbot v2</title>
+  <title>Chat Widget</title>
   <style>
     :root {
       --bg: #f4f6fb;
@@ -61,8 +61,8 @@
     }
 
     .tab-button.active {
-      color: var(--primary);
-      border-bottom: 2px solid var(--primary);
+      color: var(--text);
+      border-bottom: 2px solid var(--border);
       cursor: default;
       pointer-events: none;
     }
@@ -288,7 +288,7 @@
 
 <body>
   <div class="tab-bar">
-    <button class="tab-button active" data-tab="chat">Chat Widget</button>
+    <button class="tab-button active" id="chat-tab-button" data-tab="chat">Chat Widget</button>
     <button class="tab-button" data-tab="links">Quick links</button>
     <button class="tab-button" data-tab="info">More</button>
     <div class="tab-actions">
@@ -327,6 +327,7 @@
     const infoSummary = document.getElementById('info-summary');
     const infoStats = document.getElementById('info-stats');
     const welcomePreset = document.getElementById('welcome-preset');
+    const chatTabButton = document.getElementById('chat-tab-button');
     const tabButtons = document.querySelectorAll('.tab-button');
     const panels = document.querySelectorAll('.tab-panel');
     const tabBar = document.querySelector('.tab-bar');
@@ -338,11 +339,10 @@
     const moreMenu = document.getElementById('more-menu');
     const menuFullpage = document.getElementById('menu-fullpage');
 
-    const presetQuestions = [
-      "What can this assistant do?",
-      "Tell me something new.",
-      "Give me a quick tour.",
-      "How do I customize a quick link?"
+    const defaultStarterMessage = 'Choose one to get started.';
+    const defaultStarterSuggestions = [
+      'What can you help with?',
+      'How to lose weight?',
     ];
 
     const defaultLinks = [];
@@ -352,6 +352,9 @@
     let instructions = "You're a helpful assistant.";
     let siteID = "default";
     let variant = "v2";
+    let title = 'Chat Widget';
+    let starterMessage = defaultStarterMessage;
+    let starterSuggestions = [...defaultStarterSuggestions];
     let quickLinks = [...defaultLinks];
     let hostInfo = defaultInfo;
     let expanded = false;
@@ -438,10 +441,15 @@
       if (messages.length > 0) return;
       const container = document.createElement('div');
       container.style.textAlign = 'center';
-      container.innerHTML = '<p style="margin:0 0 0.3rem; color:var(--muted-text); font-size:0.85rem;">Start with a suggestion</p>';
+      const message = document.createElement('p');
+      message.style.margin = '0 0 0.3rem';
+      message.style.color = 'var(--muted-text)';
+      message.style.fontSize = '0.85rem';
+      message.textContent = starterMessage;
+      container.appendChild(message);
       const row = document.createElement('div');
       row.className = 'preset-row';
-      presetQuestions.forEach(q => {
+      starterSuggestions.slice(0, 3).forEach(q => {
         const btn = document.createElement('button');
         btn.type = 'button';
         btn.textContent = q;
@@ -543,21 +551,29 @@
     window.addEventListener('message', (event) => {
       const data = event.data || {};
       if (data.type === 'chat-config-v2') {
-        instructions = data.payload.instructions || instructions;
-        siteID = data.payload.siteID || siteID;
-        variant = data.payload.variant || variant;
-        const accentColor = data.payload.accentColor;
-        const theme = data.payload.theme || 'light';
+        const payload = data.payload || {};
+        instructions = payload.instructions || instructions;
+        siteID = payload.siteID || siteID;
+        variant = payload.variant || variant;
+        if (typeof payload.title === 'string') title = payload.title;
+        if (typeof payload.starterMessage === 'string') starterMessage = payload.starterMessage;
+        if (Array.isArray(payload.starterSuggestions)) {
+          starterSuggestions = payload.starterSuggestions.slice(0, 3);
+        }
+        const accentColor = payload.accentColor;
+        const theme = payload.theme || 'light';
         document.documentElement.classList.toggle('dark', theme === 'dark');
+        document.title = title;
+        chatTabButton.textContent = title;
         if (accentColor) {
           document.documentElement.style.setProperty('--accent', accentColor);
           document.documentElement.style.setProperty('--primary', accentColor);
         }
-        quickLinks = Array.isArray(data.payload.quickLinks) ? data.payload.quickLinks : [];
+        quickLinks = Array.isArray(payload.quickLinks) ? payload.quickLinks : [];
         renderQuickLinks(quickLinks);
 
-        if (typeof data.payload.info === 'object' && data.payload.info !== null) {
-          renderInfo(data.payload.info);
+        if (typeof payload.info === 'object' && payload.info !== null) {
+          renderInfo(payload.info);
         } else {
           renderInfo(null);
         }

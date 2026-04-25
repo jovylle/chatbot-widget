@@ -142,6 +142,10 @@
         <input id="cfg-variant" value="shop" />
       </div>
       <div>
+        <label for="cfg-title">widget title</label>
+        <input id="cfg-title" value="Chat Widget" />
+      </div>
+      <div>
         <label for="cfg-theme">widget theme</label>
         <select id="cfg-theme">
           <option value="">auto-detect</option>
@@ -166,10 +170,20 @@
         <label for="cfg-tagline">tagline (optional)</label>
         <input id="cfg-tagline" value="Fresh Asian-inspired pizza, ready to order." />
       </div>
+      <div>
+        <label for="cfg-starter-message">starter message</label>
+        <input id="cfg-starter-message" value="Choose one to get started." />
+      </div>
     </div>
 
     <label for="cfg-instructions">instructions</label>
     <textarea id="cfg-instructions" rows="4">You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Help with menu, prices, delivery zones, and ordering.</textarea>
+
+    <label for="cfg-starters">starterSuggestions JSON (optional, max 3)</label>
+    <textarea id="cfg-starters" rows="4">[
+  "What can you help with?",
+  "How to lose weight??"
+]</textarea>
 
     <label for="cfg-quicklinks">quickLinks JSON (optional)</label>
     <textarea id="cfg-quicklinks" rows="5">[
@@ -199,6 +213,9 @@
     <h2>Config fields</h2>
     <ul>
       <li><code>instructions</code> - assistant behavior/context for every reply.</li>
+      <li><code>title</code> - label shown on the chat tab and widget title.</li>
+      <li><code>starterMessage</code> - short line above the starter suggestions.</li>
+      <li><code>starterSuggestions</code> - up to three quick prompts shown before the first message.</li>
       <li><code>theme</code> - <code>light</code> or <code>dark</code>; omit for host auto-detect.</li>
       <li><code>position</code> - <code>bottom-right</code>, <code>bottom-left</code>, <code>top-right</code>, <code>top-left</code>.</li>
       <li><code>accentColor</code> - main widget accent hex color.</li>
@@ -223,8 +240,14 @@
     "position": "bottom-right",
     "accentColor": "#7c5dff",
     "variant": "shop",
+    "title": "Chat Widget",
     "tagline": "Fresh Asian-inspired pizza, ready to order.",
+    "starterMessage": "Choose one to get started.",
     "instructions": "You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Help with menu, prices, delivery zones, and ordering.",
+    "starterSuggestions": [
+      "What can you help with?",
+      "How to lose weight??"
+    ],
     "quickLinks": [
       { "label": "Menu", "url": "https://example.com/menu", "description": "View all pizza flavors and sides." },
       { "label": "Promos", "url": "https://example.com/promos", "description": "See latest bundles and discounts." }
@@ -271,11 +294,14 @@
     const fields = {
       siteID: document.getElementById('cfg-site-id'),
       variant: document.getElementById('cfg-variant'),
+      title: document.getElementById('cfg-title'),
       theme: document.getElementById('cfg-theme'),
       position: document.getElementById('cfg-position'),
       accentColor: document.getElementById('cfg-accent'),
       tagline: document.getElementById('cfg-tagline'),
+      starterMessage: document.getElementById('cfg-starter-message'),
       instructions: document.getElementById('cfg-instructions'),
+      starters: document.getElementById('cfg-starters'),
       quickLinks: document.getElementById('cfg-quicklinks'),
       info: document.getElementById('cfg-info')
     };
@@ -289,8 +315,17 @@
       };
       if (fields.siteID.value.trim()) chatbot.siteID = fields.siteID.value.trim();
       if (fields.variant.value.trim()) chatbot.variant = fields.variant.value.trim();
+      if (fields.title.value.trim()) chatbot.title = fields.title.value.trim();
       if (fields.tagline.value.trim()) chatbot.tagline = fields.tagline.value.trim();
+      if (fields.starterMessage.value.trim()) chatbot.starterMessage = fields.starterMessage.value.trim();
       if (fields.theme.value) chatbot.theme = fields.theme.value;
+
+      try {
+        const starterSuggestions = JSON.parse(fields.starters.value.trim() || '[]');
+        if (Array.isArray(starterSuggestions) && starterSuggestions.length) {
+          chatbot.starterSuggestions = starterSuggestions.slice(0, 3);
+        }
+      } catch {}
 
       try {
         const quickLinks = JSON.parse(fields.quickLinks.value.trim() || '[]');
