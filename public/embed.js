@@ -248,6 +248,9 @@
   button.onclick = () => {
     open = !open;
     wrapper.style.display = open ? 'flex' : 'none';
+    if (open) {
+      iframe.contentWindow?.postMessage({ type: 'chat-focus-input' }, '*');
+    }
     if (!open && expanded) {
       expanded = false;
       updateExpandedState();

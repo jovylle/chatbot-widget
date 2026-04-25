@@ -476,6 +476,7 @@
       panels.forEach(panel => panel.classList.toggle('active', panel.id === `${name}-tab`));
       if (name === 'chat') {
         renderWelcome();
+        input.focus();
       }
     }
 
@@ -591,6 +592,10 @@
         if (data.type === 'chat-advanced-expand-state') {
           expanded = !!data.payload?.expanded;
           updateFullpageMenuLabel();
+        }
+
+        if (data.type === 'chat-focus-input') {
+          input.focus();
         }
     });
 
