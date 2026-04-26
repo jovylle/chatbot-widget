@@ -57,8 +57,7 @@
       line-height: 1.5;
     }
 
-    code,
-    pre {
+    code {
       background: var(--code-bg);
       padding: 0.85rem 1rem;
       border-radius: 6px;
@@ -66,6 +65,24 @@
       line-height: 2;
       overflow-wrap: break-word;
       color: var(--code-text);
+    }
+
+    pre {
+      background: var(--code-bg);
+      padding: 0;
+      border-radius: 6px;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    pre code {
+      display: block;
+      padding: 0.85rem 1rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      word-break: break-word;
+      line-height: 1.6;
+      box-sizing: border-box;
     }
 
     h2 {
