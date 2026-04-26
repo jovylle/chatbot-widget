@@ -295,6 +295,7 @@
     const configNode = document.getElementById('chat-widget-config');
     const snippetEl = document.getElementById('generated-snippet');
     const applyBtn = document.getElementById('apply-config');
+    const embedUrl = new URL('/embed.js', window.location.origin).href;
     const fields = {
       siteID: document.getElementById('cfg-site-id'),
       variant: document.getElementById('cfg-variant'),
@@ -345,7 +346,7 @@
     };
 
     const renderSnippet = (config) => {
-      snippetEl.textContent = `<script type="application/json" id="chat-widget-config">\n${JSON.stringify(config, null, 2)}\n<\/script>\n<script src="/embed.js"><\/script>`;
+      snippetEl.textContent = `<script type="application/json" id="chat-widget-config">\n${JSON.stringify(config, null, 2)}\n<\/script>\n<script src="${embedUrl}"><\/script>`;
     };
 
     const loadWidget = () => {

@@ -105,10 +105,10 @@
 
 <body>
   <h1>chat-widget</h1>
-  <p>Minimal install: add one JSON config script with your assistant context, then load <code>/embed.js</code>.</p>
+  <p>Minimal install: add one JSON config script with your assistant context, then load <code id="embed-url-text">/embed.js</code>.</p>
 
   <h2>Minimal setup</h2>
-  <pre><code>&lt;script type="application/json" id="chat-widget-config"&gt;
+  <pre><code id="minimal-snippet">&lt;script type="application/json" id="chat-widget-config"&gt;
 {
   "chatbot": {
     "title": "Chat",
@@ -143,8 +143,14 @@
   <script>
     const themeSwitch = document.getElementById('theme-switch');
     const configNode = document.getElementById('chat-widget-config');
+    const embedUrlText = document.getElementById('embed-url-text');
+    const minimalSnippet = document.getElementById('minimal-snippet');
     const params = new URLSearchParams(window.location.search);
     const theme = params.get('theme') || '';
+    const embedUrl = new URL('/embed.js', window.location.origin).href;
+
+    embedUrlText.textContent = embedUrl;
+    minimalSnippet.textContent = minimalSnippet.textContent.replace('/embed.js', embedUrl);
 
     if (theme === 'light') {
       document.documentElement.classList.add('theme-light');
