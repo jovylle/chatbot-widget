@@ -127,6 +127,27 @@
       font-weight: 600;
       cursor: pointer;
     }
+
+    .link-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .link-list a {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      text-decoration: none;
+      font-weight: 600;
+    }
+
+    .link-list span {
+      display: block;
+      margin-top: 0.2rem;
+    }
   </style>
 </head>
 
@@ -169,6 +190,20 @@
       </select>
     </p>
     <p><a href="/advanced/">Need advanced setup and full configuration options?</a></p>
+  </div>
+
+  <div class="card">
+    <p><strong>More links</strong></p>
+    <ul class="link-list">
+      <li>
+        <a href="https://github.com/jovylle/chatbot-widget" target="_blank" rel="noreferrer">Contribution repo</a>
+        <span>Use this repo for contributions, issues, and development updates.</span>
+      </li>
+      <li>
+        <a href="https://jovylle.com" target="_blank" rel="noreferrer">More small projects</a>
+        <span>Browse more builds and side projects from jovylle.com.</span>
+      </li>
+    </ul>
   </div>
 
   <script type="application/json" id="chat-widget-config">
