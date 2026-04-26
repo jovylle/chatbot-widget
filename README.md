@@ -1,70 +1,89 @@
-
 # 💬 chat-widget
 
-Instantly embed a GPT-powered chatbot into any site.
+Embed a GPT-powered chatbot into any site.
 
-## 🚀 How to Use
+## Quick Start
 
-### Local dev
+### 1. Most minimal
 
-`netlify dev` now starts the static/assets server on port `52873` with the functions sandbox bound to `3999`. No extra flags are required—just open http://localhost:52873 when you want to preview locally.
-
-Basic config:
+Load the widget script only. No config block.
 
 ```html
-<script type="application/json" id="chat-config">
-{
-  "chatbot": {
-    "theme": "light",
-    "instructions": "You're a helpful assistant for this site."
-  }
-}
-</script>
-<script src="https://chat-widget.uft1.com/v1/embed.js"></script>
-````
-
-Optional config with `siteID` and `position`:
-
-```html
-<script type="application/json" id="chat-widget-config-001">
-{
-  "chatbot": {
-    "instructions": "You're a helpful assistant for this site."
-  }
-}
-</script>
-<script src="https://chat-widget.uft1.com/v1/embed.js"></script>
-
+<script src="https://chat-widget.uft1.com/embed.js"></script>
 ```
 
-## ✨ Advanced widget
-
-If you want the tabbed interface with notifications and a full-page expand toggle, add a second config block and reference the extended embed bundle.
+For local development, use:
 
 ```html
-<script type="application/json" id="chat-config-advanced">
+<script src="http://localhost:52873/embed.js"></script>
+```
+
+### 2. Minimal with context
+
+Add a small config block when you want a custom title and starter instructions.
+
+```html
+<script type="application/json" id="chat-widget-config">
 {
   "chatbot": {
+    "title": "Chat",
+    "instructions": "You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Be friendly, help with menu questions, suggest best sellers, and guide customers to order."
+  }
+}
+</script>
+<script src="https://chat-widget.uft1.com/embed.js"></script>
+```
+
+### On the demo page
+
+Visit [https://chat-widget.uft1.com/](https://chat-widget.uft1.com/) to see both minimal setups.
+
+- `Use this` on the one-line snippet swaps the live demo to script-only mode.
+- `Use this` on the config snippet swaps the live demo to the minimal JSON config.
+
+## Advanced setup
+
+If you want the generated snippet editor, theme selector, and optional config fields, open [`/advanced/`](https://chat-widget.uft1.com/advanced/).
+
+```html
+<script type="application/json" id="chat-widget-config">
+{
+  "chatbot": {
+    "siteID": "tokyo-zen-pizza",
     "theme": "dark",
-    "instructions": "You are an advanced assistant that keeps the site visitors informed."
+    "position": "bottom-right",
+    "accentColor": "#7c5dff",
+    "variant": "shop",
+    "title": "Chat Widget",
+    "tagline": "Fresh Asian-inspired pizza, ready to order.",
+    "starterMessage": "Choose one to get started.",
+    "instructions": "You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Help with menu, prices, delivery zones, and ordering.",
+    "starterSuggestions": [
+      "What can you help with?",
+      "How do I get started?",
+      "Show me examples."
+    ],
+    "quickLinks": [
+      { "label": "Menu", "url": "https://example.com/menu", "description": "View all pizza flavors and sides." },
+      { "label": "Promos", "url": "https://example.com/promos", "description": "See latest bundles and discounts." }
+    ],
+    "info": {
+      "headline": "Zen Slice Makati",
+      "summary": "Tokyo-inspired toppings, local ingredients, and fast delivery.",
+      "stats": [
+        { "label": "Branches", "value": "3" },
+        { "label": "Open today", "value": "10AM-11PM" }
+      ]
+    }
   }
 }
 </script>
-<script src="https://chat-widget.uft1.com/embed-extended.js"></script>
+<script src="https://chat-widget.uft1.com/embed.js"></script>
 ```
 
-The advanced widget points to `widget-advanced.html`, which exposes the `Chat`, `About`, and `Notifications` tabs plus the “Full page” button inside the widget.
+## Extended widget v2
 
-## ✨ Extended widget v2
-
-Need more than chat? The v2 bundle introduces its own `/v2/embed.js` that targets `widget.html`. It keeps the chat core but adds:
-
-- a header with a tagline and instructions
-- multi-tab layout (`Chat`, `Quick links`, `Host info`)
-- curated quick links and host stats that you pass via the config
-- an accent color, variant label, and full-page toggle for partners
-
-Drop this snippet to run the new experience (the same one powering `public/v2/index.html`):
+Need more than chat? The v2 bundle adds a tabbed panel with quick links and host info.
 
 ```html
 <script type="application/json" id="chat-config-advanced-v2">
@@ -97,52 +116,43 @@ Drop this snippet to run the new experience (the same one powering `public/v2/in
 <script src="https://chat-widget.uft1.com/v2/embed.js"></script>
 ```
 
-Visit `public/v2/index.html` to preview the experience, see the snippet rendered automatically, and read quick tips for customizing the links and host info for each site.
+Visit [`public/v2/index.html`](/Users/jovyllebermudez/fore/lab/chatbot-widget/public/v2/index.html) to preview the experience and see the snippet rendered automatically.
 
-## 🏠 Host-style examples
+## Host-style examples
 
-Want to see how actual landing pages might embed the new experience? Check `public/examples/` for host-inspired demos:
+See [`public/examples/`](/Users/jovyllebermudez/fore/lab/chatbot-widget/public/examples) for host-inspired demos:
 
-- `resort.html`: a warm hospitality landing page with spa links and guest stats.
-- `agency.html`: a creative agency desk that surfaces campaign guides and media kits.
-- `marketplace.html`: a premium marketplace flow that highlights makers, drops, and support links.
+- `resort.html`: hospitality layout with spa links and guest stats.
+- `agency.html`: creative agency layout with campaign guides and media kits.
+- `marketplace.html`: marketplace layout with makers, drops, and support links.
 
-Each page includes its own `chat-config-advanced-v2` block and loads `embed.js` from the `/v2/` folder via a relative path so you can inspect how the quick links, info cards, and accent color change per host.
+## Project Notes
 
-## 🧪 Live Demo
+- `netlify dev` starts the static server on port `52873` and the functions sandbox on `3999`.
+- The canonical widget script is `https://chat-widget.uft1.com/embed.js`.
+- The advanced page now shows copy-paste snippets using the current host origin.
 
-Visit: [https://chat-widget.uft1.com](https://chat-widget.uft1.com)
+## Config Options
 
-This page has the chatbot running — click the bubble.
+| Field | Type | Description |
+| --- | --- | --- |
+| `siteID` | `string` | Optional ID to track source. |
+| `theme` | `string` | `"light"` or `"dark"`, or omit for host auto-detect. |
+| `position` | `string` | `"bottom-right"`, `"bottom-left"`, `"top-right"`, `"top-left"`. |
+| `instructions` | `string` | Prompt given to the GPT assistant. |
+| `accentColor` | `string` | Hex color for the button and widget accents. |
+| `title` | `string` | Label shown in the widget. |
+| `tagline` | `string` | Optional line above the instructions. |
+| `starterMessage` | `string` | Short prompt above starter suggestions. |
+| `starterSuggestions` | `array` | Up to three quick prompts shown before the first message. |
+| `quickLinks` | `array` | Optional `{ label, url, description }` links for the v2 widget. |
+| `info` | `object` | Optional `{ headline, summary, stats }` context card for the v2 widget. |
+| `variant` | `string` | Optional label for the widget flavor. |
 
-## 🎯 Project Goals
+## Live Demo
 
-- Keep the core chatbot widget lean, reliable, and helpful to site visitors while hosting the GPT service ourselves.
-- Build a richer experience around that widget with a new extended bundle (think “version 2” or a separate embed file) so we can add new tabs, show quick links, surface more information, and let each host site customize the experience.
-- Give visitors control over the layout (maximize/full-page mode) and lets partners tweak the look, tabs, and extra content without touching the original `embed.js`.
+Visit [https://chat-widget.uft1.com](https://chat-widget.uft1.com) and click the bubble.
 
-## ⚙️ Config Options
+## Source
 
-| Field          | Type     | Description                                                              |
-| -------------- | -------- | ------------------------------------------------------------------------ |
-| `siteID`       | `string` | Optional ID to track source                                              |
-| `theme`        | `string` | `"light"` (default) or `"dark"`                                          |
-| `position`     | `string` | `"bottom-right"` (default), `"bottom-left"`, `"top-right"`, `"top-left"` |
-| `instructions` | `string` | Prompt given to the GPT assistant                                        |
-
-### Optional v1 extras
-
-`embed.js` also accepts a few extra fields so you can polish the floating trigger and add nicer controls without touching the widget:
-
-| Field          | Type      | Description |
-|----------------|-----------|-------------|
-| `accentColor`  | `string`  | Hex color for the button border, tooltip, and header gradient (defaults to `#3f51b5`). |
-| `buttonLabel`  | `string`  | Tiny label under the icon (`Chat` by default). |
-| `tooltipText`  | `string`  | Hover text shown above the button (`Ask anything` by default). |
-| `widgetTitle`  | `string`  | Title placed inside the header above the iframe (`Chat with us`). |
-| `autoOpen`     | `boolean` | If `true`, the widget opens automatically after loading (defaults to `false`). |
-| `closeOnBlur`  | `boolean` | When `true`, clicking outside the panel or pressing `Esc` closes it (defaults to `true`). |
-
-These additions also include a pulsing status dot, hovered tooltip, and a close button inside the header so the experience feels a little more like a concierge tool.
-
-📂 [View Source Code](https://github.com/jovylle/chatbot-widget)
+[`github.com/jovylle/chatbot-widget`](https://github.com/jovylle/chatbot-widget)

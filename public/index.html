@@ -100,15 +100,36 @@
     a {
       color: var(--link);
     }
+
+    .card button {
+      border: none;
+      border-radius: 999px;
+      background: var(--link);
+      color: white;
+      padding: 0.55rem 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+    }
   </style>
 </head>
 
 <body>
   <h1>chat-widget</h1>
-  <p>Minimal install: add one JSON config script with your assistant context, then load <code id="embed-url-text">/embed.js</code>.</p>
+  <p>Minimal install: start with the one-line embed, or add a small JSON config when you want starter context. The script URL is <code id="embed-url-text">/embed.js</code>.</p>
 
-  <h2>Minimal setup</h2>
-  <pre><code id="minimal-snippet">&lt;script type="application/json" id="chat-widget-config"&gt;
+  <h2>Minimal setups</h2>
+
+  <div class="card">
+    <p><strong>1. Most minimal</strong></p>
+    <p>Just load the widget script. No config block.</p>
+    <pre><code id="embed-only-snippet">&lt;script src="/embed.js"&gt;&lt;/script&gt;</code></pre>
+    <button id="use-embed-only" type="button">Use this</button>
+  </div>
+
+  <div class="card">
+    <p><strong>2. Minimal with context</strong></p>
+    <p>Add a tiny JSON config, then load the widget script.</p>
+    <pre><code id="minimal-snippet">&lt;script type="application/json" id="chat-widget-config"&gt;
 {
   "chatbot": {
     "title": "Chat",
@@ -117,10 +138,11 @@
 }
 &lt;/script&gt;
 &lt;script src="/embed.js"&gt;&lt;/script&gt;</code></pre>
+    <button id="use-minimal-config" type="button">Use this</button>
+  </div>
 
   <div class="card">
-    <p>That is enough to launch. Everything else is optional.</p>
-    <p>Live demo is active on this page.</p>
+    <p>Live demo is active on this page. Use the buttons above to switch between the two setups.</p>
     <p>
       <label for="theme-switch">Demo theme</label>
       <select id="theme-switch">
@@ -142,15 +164,68 @@
   </script>
   <script>
     const themeSwitch = document.getElementById('theme-switch');
-    const configNode = document.getElementById('chat-widget-config');
     const embedUrlText = document.getElementById('embed-url-text');
     const minimalSnippet = document.getElementById('minimal-snippet');
+    const embedOnlySnippet = document.getElementById('embed-only-snippet');
+    const useEmbedOnlyButton = document.getElementById('use-embed-only');
+    const useMinimalConfigButton = document.getElementById('use-minimal-config');
+    let liveEmbedScript = document.getElementById('live-embed-script');
+    let configNode = document.getElementById('chat-widget-config');
     const params = new URLSearchParams(window.location.search);
     const theme = params.get('theme') || '';
     const embedUrl = new URL('/embed.js', window.location.origin).href;
+    const minimalConfig = {
+      chatbot: {
+        title: 'Chat',
+        instructions: 'You are the assistant for Zen Slice, an Asian-style pizza shop in Makati City, Philippines. Be friendly, help with menu questions, suggest best sellers, and guide customers to order.'
+      }
+    };
 
     embedUrlText.textContent = embedUrl;
-    minimalSnippet.textContent = minimalSnippet.textContent.replace('/embed.js', embedUrl);
+    embedOnlySnippet.textContent = `<script src="${embedUrl}"><\/script>`;
+    minimalSnippet.textContent = `<script type="application/json" id="chat-widget-config">\n${JSON.stringify(minimalConfig, null, 2)}\n<\/script>\n<script src="${embedUrl}"><\/script>`;
+
+    const ensureConfigNode = () => {
+      if (!configNode) {
+        configNode = document.createElement('script');
+        configNode.type = 'application/json';
+        configNode.id = 'chat-widget-config';
+        document.body.appendChild(configNode);
+      }
+      return configNode;
+    };
+
+    const removeConfigNode = () => {
+      configNode?.remove();
+      configNode = null;
+    };
+
+    const setMinimalConfig = () => {
+      ensureConfigNode().textContent = JSON.stringify(minimalConfig, null, 2);
+    };
+
+    const reloadEmbed = () => {
+      liveEmbedScript?.remove();
+      const nextScript = document.createElement('script');
+      nextScript.id = 'live-embed-script';
+      nextScript.src = '/embed.js';
+      nextScript.async = false;
+      document.body.appendChild(nextScript);
+      liveEmbedScript = nextScript;
+    };
+
+    const useEmbedOnly = () => {
+      removeConfigNode();
+      reloadEmbed();
+    };
+
+    const useMinimalConfig = () => {
+      setMinimalConfig();
+      reloadEmbed();
+    };
+
+    useEmbedOnlyButton.addEventListener('click', useEmbedOnly);
+    useMinimalConfigButton.addEventListener('click', useMinimalConfig);
 
     if (theme === 'light') {
       document.documentElement.classList.add('theme-light');
@@ -177,7 +252,7 @@
       window.location.search = nextQuery ? `?${nextQuery}` : '';
     });
   </script>
-  <script src="/embed.js"></script>
+  <script id="live-embed-script" src="/embed.js"></script>
 
 </body>
 
