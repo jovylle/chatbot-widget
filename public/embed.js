@@ -46,7 +46,8 @@
   const DEFAULT_INFO = null;
   const DEFAULT_STARTER_SUGGESTIONS = [
     'What can you help with?',
-    'How to lose weight?',
+    'How do I get started?',
+    'Show me examples.',
   ];
 
   const DEFAULT_CONFIG = {
