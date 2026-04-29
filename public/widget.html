@@ -303,6 +303,7 @@
       <button id="more-actions" type="button" aria-label="More actions">⋯</button>
       <div id="more-menu" class="more-menu">
         <button type="button" id="menu-fullpage">Toggle full page</button>
+        <button type="button" id="menu-feedback">Feedback or issues</button>
       </div>
     </div>
   </div>
@@ -346,6 +347,8 @@
     const moreActions = document.getElementById('more-actions');
     const moreMenu = document.getElementById('more-menu');
     const menuFullpage = document.getElementById('menu-fullpage');
+    const menuFeedback = document.getElementById('menu-feedback');
+    const feedbackUrl = 'https://feedback.uft1.com/';
 
     const defaultStarterMessage = 'Choose one to get started.';
     const defaultStarterSuggestions = [
@@ -551,6 +554,11 @@
     menuFullpage.addEventListener('click', () => {
       setExpanded(!expanded);
       updateFullpageMenuLabel();
+      moreMenu.style.display = 'none';
+    });
+
+    menuFeedback.addEventListener('click', () => {
+      window.open(feedbackUrl, '_blank', 'noopener,noreferrer');
       moreMenu.style.display = 'none';
     });
 
