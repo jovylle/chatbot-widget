@@ -39,32 +39,71 @@
       padding: 1rem;
       background: rgba(15, 23, 42, 0.65);
     }
+    ul {
+      margin: 0;
+      padding-left: 1.2rem;
+      color: #cbd5e1;
+    }
+    li {
+      margin-bottom: 0.35rem;
+    }
   </style>
 </head>
 <body>
   <h1>About chat-widget</h1>
-  <p>`chat-widget` is a lightweight embeddable chatbot for websites.</p>
+  <p>chat-widget is a lightweight embeddable GPT chat assistant for any website.</p>
 
   <div class="card">
     <h2>What it is for</h2>
-    <p>It gives site visitors a floating chat assistant that can be configured with your own instructions, theme, links, and contextual info.</p>
+    <p>It gives site visitors a floating chat assistant configurable with your instructions, theme, quick links, and contextual info — embedded with a single script tag.</p>
+  </div>
+
+  <div class="card">
+    <h2>Architecture</h2>
+    <ul>
+      <li><strong>embed.js</strong> — runs on the host page; injects the bubble and iframe.</li>
+      <li><strong>widget.html</strong> — tabbed chat UI inside the iframe.</li>
+      <li><strong>chatbot.js</strong> — Netlify Function that proxies OpenAI securely.</li>
+    </ul>
+    <p>See the full architecture doc: <a href="/docs/architecture.md">docs/architecture.md</a></p>
+  </div>
+
+  <div class="card">
+    <h2>Documentation</h2>
+    <ul>
+      <li><a href="/docs/architecture.md">Architecture</a> — system overview and message protocol</li>
+      <li><a href="/docs/embedding-guide.md">Embedding guide</a> — embed patterns and host JS API</li>
+      <li><a href="/docs/config-reference.md">Config reference</a> — all config fields</li>
+      <li><a href="/docs/development.md">Development</a> — local setup and deploy</li>
+      <li><a href="/docs/decisions/README.md">Decisions</a> — architecture decision records</li>
+    </ul>
   </div>
 
   <div class="card">
     <h2>Pages</h2>
     <ul>
-      <li><a href="/">Home</a> - minimal setup and live demo.</li>
-      <li><a href="/advanced/">Advanced setup</a> - full configuration reference.</li>
-      <li><a href="/widget.html">Widget UI</a> - runtime widget interface.</li>
+      <li><a href="/">Home</a> — minimal setup and live demo</li>
+      <li><a href="/advanced/">Advanced setup</a> — interactive config generator</li>
+      <li><a href="/widget.html">Widget UI</a> — runtime widget interface</li>
+      <li><a href="/examples/resort.html">Examples</a> — resort, agency, marketplace demos</li>
     </ul>
   </div>
 
   <div class="card">
     <h2>Routes</h2>
     <ul>
-      <li>Canonical: <code>/embed.js</code>, <code>/widget.html</code>, <code>/</code>.</li>
-      <li>Legacy compatibility: <code>/v1/*</code> and <code>/v2/*</code> forward to canonical paths.</li>
+      <li>Canonical: <code>/embed.js</code>, <code>/widget.html</code>, <code>/</code></li>
+      <li>Legacy: <code>/v1/*</code> and <code>/v2/*</code> forward to canonical paths</li>
     </ul>
+  </div>
+
+  <div class="card">
+    <h2>Host API</h2>
+    <p>After embed loads, control the widget from your page:</p>
+    <pre>window.ChatWidget.open();
+window.ChatWidget.close();
+window.ChatWidget.toggle();
+window.ChatWidget.isOpen();</pre>
   </div>
 
   <p><a href="/">Back to home</a> · <a href="/advanced/">Go to advanced setup</a></p>

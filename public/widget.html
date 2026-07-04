@@ -166,6 +166,52 @@
       color: var(--text);
     }
 
+    .msg.bot p {
+      margin: 0 0 0.5rem;
+    }
+
+    .msg.bot p:last-child {
+      margin-bottom: 0;
+    }
+
+    .msg.bot ul, .msg.bot ol {
+      margin: 0.25rem 0 0.5rem 1.1rem;
+      padding: 0;
+    }
+
+    .msg.bot code {
+      background: rgba(0, 0, 0, 0.08);
+      padding: 0.1rem 0.35rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+
+    html.dark .msg.bot code {
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .msg.bot pre {
+      margin: 0.35rem 0;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      background: rgba(0, 0, 0, 0.06);
+      overflow-x: auto;
+      font-size: 0.82rem;
+    }
+
+    html.dark .msg.bot pre {
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .msg.bot pre code {
+      background: none;
+      padding: 0;
+    }
+
+    .msg.bot a {
+      color: var(--accent);
+    }
+
     form {
       display: flex;
       gap: 0.5rem;
@@ -303,6 +349,7 @@
       <button id="more-actions" type="button" aria-label="More actions">⋯</button>
       <div id="more-menu" class="more-menu">
         <button type="button" id="menu-fullpage">Toggle full page</button>
+        <button type="button" id="menu-clear">Clear chat</button>
         <button type="button" id="menu-feedback">Feedback or issues</button>
       </div>
     </div>
@@ -347,8 +394,17 @@
     const moreActions = document.getElementById('more-actions');
     const moreMenu = document.getElementById('more-menu');
     const menuFullpage = document.getElementById('menu-fullpage');
+    const menuClear = document.getElementById('menu-clear');
     const menuFeedback = document.getElementById('menu-feedback');
     const feedbackUrl = 'https://feedback.uft1.com/';
+
+    const widgetOrigin = window.location.origin;
+    const parentOrigin = (() => {
+      try {
+        if (document.referrer) return new URL(document.referrer).origin;
+      } catch {}
+      return widgetOrigin;
+    })();
 
     const defaultStarterMessage = 'Choose one to get started.';
     const defaultStarterSuggestions = [
@@ -362,7 +418,8 @@
     const defaultInfo = null;
 
     let instructions = "You're a helpful assistant.";
-    let siteID = "default";
+    const urlParams = new URLSearchParams(window.location.search);
+    let siteID = urlParams.get('siteID') || "default";
     let variant = "v2";
     let title = 'Chat Widget';
     let starterMessage = defaultStarterMessage;
@@ -370,7 +427,92 @@
     let quickLinks = [...defaultLinks];
     let hostInfo = defaultInfo;
     let expanded = false;
+    let includePageContext = false;
+    let pageContext = null;
+    let loadingMessage = 'Thinking...';
     const messages = [];
+
+    const sessionKey = () => `chat-widget-session:${siteID}`;
+
+    const saveSession = () => {
+      try {
+        sessionStorage.setItem(sessionKey(), JSON.stringify(messages));
+      } catch {}
+    };
+
+    const loadSession = () => {
+      messages.length = 0;
+      chat.innerHTML = '';
+      try {
+        const raw = sessionStorage.getItem(sessionKey());
+        if (!raw) return;
+        const saved = JSON.parse(raw);
+        if (!Array.isArray(saved)) return;
+        saved.forEach((entry) => {
+          if (!entry || !entry.content) return;
+          const who = entry.role === 'user' ? 'user' : 'bot';
+          addMsg(entry.content, who, false, who === 'bot');
+          messages.push(entry);
+        });
+      } catch {}
+      renderWelcome();
+    };
+
+    const clearSession = () => {
+      messages.length = 0;
+      chat.innerHTML = '';
+      try {
+        sessionStorage.removeItem(sessionKey());
+      } catch {}
+      renderWelcome();
+    };
+
+    const escapeHtml = (text) => text
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;');
+
+    const renderMarkdown = (text) => {
+      const blocks = [];
+      let html = escapeHtml(text);
+
+      html = html.replace(/```([\s\S]*?)```/g, (_, code) => {
+        const token = `@@CODE${blocks.length}@@`;
+        blocks.push(`<pre><code>${code.trim()}</code></pre>`);
+        return token;
+      });
+
+      html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+      html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+      html = html.replace(/\*([^*\n]+)\*/g, '<em>$1</em>');
+      html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, '<a href="$2" target="_blank" rel="noreferrer">$1</a>');
+
+      html = html.replace(/(?:^|\n)([-*] .+(?:\n[-*] .+)*)/g, (block) => {
+        const items = block.trim().split('\n').map((line) => `<li>${line.replace(/^[-*]\s+/, '')}</li>`).join('');
+        return `\n<ul>${items}</ul>`;
+      });
+
+      html = html.replace(/\n\n+/g, '</p><p>');
+      html = `<p>${html}</p>`;
+      html = html.replace(/<p><\/p>/g, '');
+      html = html.replace(/<p>(<ul>[\s\S]*?<\/ul>)<\/p>/g, '$1');
+      html = html.replace(/<p>(<pre>[\s\S]*?<\/pre>)<\/p>/g, '$1');
+
+      blocks.forEach((block, index) => {
+        html = html.replace(`@@CODE${index}@@`, block);
+      });
+
+      return html;
+    };
+
+    const buildInstructions = () => {
+      if (!includePageContext || !pageContext) return instructions;
+      const parts = [instructions];
+      if (pageContext.url) parts.push(`Current page URL: ${pageContext.url}`);
+      if (pageContext.title) parts.push(`Current page title: ${pageContext.title}`);
+      return parts.join('\n\n');
+    };
 
     const hasInfoContent = (value) => {
       if (!value || typeof value !== 'object') return false;
@@ -484,13 +626,15 @@
       }
     }
 
-    function addMsg(text, who = 'bot', loading = false) {
+    function addMsg(text, who = 'bot', loading = false, isMarkdown = false) {
       renderWelcome();
       const bubble = document.createElement('div');
       bubble.className = `msg ${who}`;
       if (loading) {
-        bubble.innerHTML = `<span class="loading-spinner"></span><span>${text}</span>`;
+        bubble.innerHTML = `<span class="loading-spinner"></span><span>${escapeHtml(text)}</span>`;
         bubble.classList.add('loading');
+      } else if (who === 'bot' && isMarkdown) {
+        bubble.innerHTML = renderMarkdown(text);
       } else {
         bubble.textContent = text;
       }
@@ -505,19 +649,25 @@
       if (!value) return;
       addMsg(value, 'user');
       messages.push({ role: 'user', content: value });
+      saveSession();
       input.value = '';
-      const loadingNode = addMsg('Thinking...', 'bot', true);
+      const loadingNode = addMsg(loadingMessage, 'bot', true);
       try {
         const response = await fetch('/.netlify/functions/chatbot', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages, instructions })
+          body: JSON.stringify({
+            messages,
+            instructions: buildInstructions(),
+            siteID
+          })
         });
         const data = await response.json();
         const reply = data.reply || 'Sorry, something went wrong.';
         loadingNode.remove();
-        addMsg(reply, 'bot');
+        addMsg(reply, 'bot', false, true);
         messages.push({ role: 'assistant', content: reply });
+        saveSession();
       } catch (error) {
         loadingNode.remove();
         addMsg('The chatbot could not connect. Please try again soon.', 'bot');
@@ -531,7 +681,7 @@
 
     const setExpanded = (next) => {
       expanded = next;
-      window.parent.postMessage({ type: 'chat-advanced-v2-expand', payload: { expanded } }, '*');
+      window.parent.postMessage({ type: 'chat-advanced-v2-expand', payload: { expanded } }, parentOrigin);
     };
 
     const updateFullpageMenuLabel = () => {
@@ -557,6 +707,11 @@
       moreMenu.style.display = 'none';
     });
 
+    menuClear.addEventListener('click', () => {
+      clearSession();
+      moreMenu.style.display = 'none';
+    });
+
     menuFeedback.addEventListener('click', () => {
       window.open(feedbackUrl, '_blank', 'noopener,noreferrer');
       moreMenu.style.display = 'none';
@@ -567,6 +722,7 @@
     });
 
     window.addEventListener('message', (event) => {
+      if (event.origin !== widgetOrigin && event.origin !== parentOrigin) return;
       const data = event.data || {};
       if (data.type === 'chat-config-v2') {
         const payload = data.payload || {};
@@ -578,6 +734,9 @@
         if (Array.isArray(payload.starterSuggestions)) {
           starterSuggestions = payload.starterSuggestions.slice(0, 3);
         }
+        if (typeof payload.loadingMessage === 'string') loadingMessage = payload.loadingMessage;
+        includePageContext = !!payload.includePageContext;
+        pageContext = payload.pageContext || null;
         const accentColor = payload.accentColor;
         const theme = payload.theme || 'light';
         document.documentElement.classList.toggle('dark', theme === 'dark');
@@ -596,6 +755,7 @@
           renderInfo(null);
         }
         applyOptionalTabs();
+        loadSession();
       }
 
         if (data.type === 'chat-advanced-expand-state') {
@@ -614,6 +774,7 @@
     updateFullpageMenuLabel();
     renderWelcome();
     setActiveTab('chat');
+    loadSession();
   </script>
 </body>
 

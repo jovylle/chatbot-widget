@@ -176,6 +176,27 @@
         <label for="cfg-starter-message">starter message</label>
         <input id="cfg-starter-message" value="Choose one to get started." />
       </div>
+      <div>
+        <label for="cfg-loading-message">loadingMessage</label>
+        <input id="cfg-loading-message" value="Thinking..." />
+      </div>
+    </div>
+
+    <div class="grid">
+      <div>
+        <label for="cfg-auto-open">autoOpen</label>
+        <select id="cfg-auto-open">
+          <option value="false" selected>false</option>
+          <option value="true">true</option>
+        </select>
+      </div>
+      <div>
+        <label for="cfg-page-context">includePageContext</label>
+        <select id="cfg-page-context">
+          <option value="false" selected>false</option>
+          <option value="true">true</option>
+        </select>
+      </div>
     </div>
 
     <label for="cfg-instructions">instructions</label>
@@ -219,12 +240,16 @@
       <li><code>title</code> - label shown on the chat tab and widget title.</li>
       <li><code>starterMessage</code> - short line above the starter suggestions.</li>
       <li><code>starterSuggestions</code> - up to three quick prompts shown before the first message.</li>
+      <li><code>loadingMessage</code> - text shown while waiting for a reply.</li>
+      <li><code>autoOpen</code> - open the widget panel immediately on load.</li>
+      <li><code>includePageContext</code> - send host page URL and title with chat requests.</li>
       <li><code>theme</code> - <code>light</code> or <code>dark</code>; omit for host auto-detect.</li>
       <li><code>position</code> - <code>bottom-right</code>, <code>bottom-left</code>, <code>top-right</code>, <code>top-left</code>.</li>
       <li><code>accentColor</code> - main widget accent hex color.</li>
       <li><code>tagline</code>, <code>quickLinks</code>, and <code>info</code> - optional content sections.</li>
       <li><code>siteID</code> and <code>variant</code> - optional identifiers/labels.</li>
     </ul>
+    <p>Full reference: <a href="/docs/config-reference.md">config reference</a> · <a href="/docs/embedding-guide.md">embedding guide</a></p>
   </div>
 
   <div class="card">
@@ -305,6 +330,9 @@
       accentColor: document.getElementById('cfg-accent'),
       tagline: document.getElementById('cfg-tagline'),
       starterMessage: document.getElementById('cfg-starter-message'),
+      loadingMessage: document.getElementById('cfg-loading-message'),
+      autoOpen: document.getElementById('cfg-auto-open'),
+      includePageContext: document.getElementById('cfg-page-context'),
       instructions: document.getElementById('cfg-instructions'),
       starters: document.getElementById('cfg-starters'),
       quickLinks: document.getElementById('cfg-quicklinks'),
@@ -323,6 +351,9 @@
       if (fields.title.value.trim()) chatbot.title = fields.title.value.trim();
       if (fields.tagline.value.trim()) chatbot.tagline = fields.tagline.value.trim();
       if (fields.starterMessage.value.trim()) chatbot.starterMessage = fields.starterMessage.value.trim();
+      if (fields.loadingMessage.value.trim()) chatbot.loadingMessage = fields.loadingMessage.value.trim();
+      if (fields.autoOpen.value === 'true') chatbot.autoOpen = true;
+      if (fields.includePageContext.value === 'true') chatbot.includePageContext = true;
       if (fields.theme.value) chatbot.theme = fields.theme.value;
 
       try {

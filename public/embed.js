@@ -26,6 +26,10 @@
  * - quickLinks (array): Each entry { label, url, description } to surface CTAs inside the widget.
  * - info (object): { headline, summary, stats: [{ label, value }] } to show context cards underneath the links.
  * - autoOpen (boolean): When true, opens the widget immediately after load.
+ * - includePageContext (boolean): When true, sends host page URL and title with chat requests.
+ * - loadingMessage (string): Text shown while waiting for a reply.
+ *
+ * Host API: window.ChatWidget.open(), .close(), .toggle(), .isOpen()
  *
  * This script renders the floating button and iframe, then posts `chat-config-v2` with
  * the sanitized payload to `public/widget.html`.
@@ -136,6 +140,11 @@
   const starterSuggestions = Array.isArray(botConfig.starterSuggestions)
     ? botConfig.starterSuggestions.slice(0, 3)
     : DEFAULT_CONFIG.chatbot.starterSuggestions;
+  const autoOpen = !!botConfig.autoOpen;
+  const includePageContext = !!botConfig.includePageContext;
+  const loadingMessage = typeof botConfig.loadingMessage === 'string'
+    ? botConfig.loadingMessage
+    : 'Thinking...';
 
   const isBottom = position.includes('bottom');
   const isRight = position.includes('right');
@@ -205,6 +214,7 @@
     ? new URL(thisScript.src, window.location.href)
     : new URL('/embed.js', window.location.origin);
   const baseUrl = scriptUrl.origin + scriptUrl.pathname.replace(/\/[^\/]+$/, '');
+  const widgetOrigin = scriptUrl.origin;
   iframe.src = `${baseUrl}/widget.html?siteID=${encodeURIComponent(siteID)}&theme=${theme}`;
   iframe.style = 'width:100%; height:100%; border:none; display:block;';
   content.appendChild(iframe);
@@ -241,16 +251,16 @@
     } else {
       setStandardPosition();
     }
-    iframe.contentWindow?.postMessage({ type: 'chat-advanced-expand-state', payload: { expanded } }, '*');
+    iframe.contentWindow?.postMessage({ type: 'chat-advanced-expand-state', payload: { expanded } }, widgetOrigin);
   };
 
   setStandardPosition();
 
-  button.onclick = () => {
-    open = !open;
+  const setOpen = (next) => {
+    open = !!next;
     wrapper.style.display = open ? 'flex' : 'none';
     if (open) {
-      iframe.contentWindow?.postMessage({ type: 'chat-focus-input' }, '*');
+      iframe.contentWindow?.postMessage({ type: 'chat-focus-input' }, widgetOrigin);
     }
     if (!open && expanded) {
       expanded = false;
@@ -258,12 +268,18 @@
     }
   };
 
+  button.onclick = () => setOpen(!open);
+
   iframe.onload = () => {
     sendConfig();
     updateExpandedState();
   };
 
   const sendConfig = () => {
+    const pageContext = includePageContext
+      ? { url: window.location.href, title: document.title }
+      : null;
+
     iframe.contentWindow?.postMessage({
       type: 'chat-config-v2',
       payload: {
@@ -278,12 +294,16 @@
         tagline,
         title,
         starterMessage,
-        starterSuggestions
+        starterSuggestions,
+        includePageContext,
+        loadingMessage,
+        pageContext
       }
-    }, '*');
+    }, widgetOrigin);
   };
 
   const handleExpandMessage = (event) => {
+    if (event.origin !== widgetOrigin) return;
     const data = event.data || {};
     if (data.type === 'chat-advanced-v2-expand') {
       const next = !!data.payload?.expanded;
@@ -301,6 +321,17 @@
   };
   window[EXPAND_HANDLER_KEY] = handleExpandMessage;
   window.addEventListener('message', handleExpandMessage);
+
+  window.ChatWidget = {
+    open: () => setOpen(true),
+    close: () => setOpen(false),
+    toggle: () => setOpen(!open),
+    isOpen: () => open
+  };
+
+  if (autoOpen) {
+    setOpen(true);
+  }
 
   if (window.location.hostname.includes('localhost')) {
     console.log('💬 extended chat v2 config loaded:', { siteID, theme, position, instructions, title });

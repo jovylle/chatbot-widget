@@ -1,7 +1,11 @@
 {
+  "name": "chat-widget",
   "type": "module",
+  "scripts": {
+    "dev": "netlify dev",
+    "start": "netlify dev"
+  },
   "dependencies": {
-    "node-fetch": "^3.3.2",
-    "openai": "^4.0.0"
+    "node-fetch": "^3.3.2"
   }
 }
