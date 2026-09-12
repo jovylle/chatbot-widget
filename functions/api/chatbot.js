@@ -62,7 +62,7 @@ export async function onRequestPost(context) {
     ...messages,
   ];
 
-  const model = env.OPENAI_MODEL || "gpt-3.5-turbo";
+  const model = env.OPENAI_MODEL || "gpt-5-nano";
 
   let response;
   try {
