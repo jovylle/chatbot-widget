@@ -59,6 +59,17 @@ npm run dev           # http://localhost:52873
 
 See [docs/development.md](docs/development.md) for full setup.
 
+## Deploy (Cloudflare Pages)
+
+```bash
+npx wrangler pages deploy public --project-name chat-widget --commit-dirty=true
+```
+
+Live at https://chat-widget.uft1.com (origin `chat-widget-9mp.pages.dev`).
+Chat API is a Pages Function (`functions/api/chatbot.js`); the legacy
+`/.netlify/functions/chatbot` path still works via `_redirects` + middleware.
+Set `OPENAI_API_KEY` with `wrangler pages secret put OPENAI_API_KEY --project-name chat-widget`.
+
 ## Source
 
 [github.com/jovylle/chatbot-widget](https://github.com/jovylle/chatbot-widget)
