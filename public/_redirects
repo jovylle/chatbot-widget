@@ -1,0 +1,2 @@
+# Legacy Netlify function path → Pages Function (keeps old cached embed copies working)
+/.netlify/functions/chatbot /api/chatbot 200
